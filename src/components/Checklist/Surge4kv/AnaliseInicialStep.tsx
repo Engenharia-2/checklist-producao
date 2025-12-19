@@ -1,0 +1,73 @@
+import React from 'react';
+import { ScrollView } from 'react-native';
+import { useSessionStore } from '../../../store/sessionStore';
+import CustomInput from '../../ui/Input/CustomInput';
+import CustomTitle from '../../ui/Title/CustomTitle';
+import { styles } from '../styles';
+
+interface StepProps {
+    sessionId: string;
+}
+
+export const AnaliseInicialStep: React.FC<StepProps> = ({ sessionId }) => {
+    const { sessions, updateChecklistItem } = useSessionStore();
+    const session = sessions.find(s => s.id === sessionId);
+    const checklist = session?.checklist || {};
+
+    const handleChange = (key: string, value: string) => {
+        updateChecklistItem(sessionId, { [key]: value });
+    };
+
+    return (
+        <ScrollView contentContainerStyle={styles.container}>
+            <CustomTitle title="Análise Inicial" />
+
+            <CustomInput
+                label="Modelo do equipamento: bancada ou maleta?"
+                value={checklist['surge4kv_analise_modelo_equip'] || ''}
+                onChangeText={(text) => handleChange('surge4kv_analise_modelo_equip', text)}
+            />
+            <CustomInput
+                label="Modelo/tipo do computador"
+                value={checklist['surge4kv_analise_modelo_pc'] || ''}
+                onChangeText={(text) => handleChange('surge4kv_analise_modelo_pc', text)}
+            />
+            <CustomInput
+                label="Modelo do osciloscópio"
+                value={checklist['surge4kv_analise_modelo_osc'] || ''}
+                onChangeText={(text) => handleChange('surge4kv_analise_modelo_osc', text)}
+            />
+            <CustomInput
+                label="Modelo da tela"
+                value={checklist['surge4kv_analise_modelo_tela'] || ''}
+                onChangeText={(text) => handleChange('surge4kv_analise_modelo_tela', text)}
+            />
+            <CustomInput
+                label="Número do computador (ao abrir o software)"
+                value={checklist['surge4kv_analise_num_pc'] || ''}
+                onChangeText={(text) => handleChange('surge4kv_analise_num_pc', text)}
+            />
+            <CustomInput
+                label="Nome da versão de software do surge"
+                value={checklist['surge4kv_analise_versao_software'] || ''}
+                onChangeText={(text) => handleChange('surge4kv_analise_versao_software', text)}
+            />
+            <CustomInput
+                label="Data da versão de software do surge"
+                value={checklist['surge4kv_analise_data_software'] || ''}
+                onChangeText={(text) => handleChange('surge4kv_analise_data_software', text)}
+                placeholder="DD/MM/AAAA"
+            />
+            <CustomInput
+                label="Licenciar Windows. Número"
+                value={checklist['surge4kv_analise_licenca_num'] || ''}
+                onChangeText={(text) => handleChange('surge4kv_analise_licenca_num', text)}
+            />
+            <CustomInput
+                label="Licenciar Windows. Versão (HOME/PRO)"
+                value={checklist['surge4kv_analise_licenca_versao'] || ''}
+                onChangeText={(text) => handleChange('surge4kv_analise_licenca_versao', text)}
+            />
+        </ScrollView>
+    );
+};

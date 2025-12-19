@@ -1,0 +1,52 @@
+		OP/OS:						OP	0	
+		DATA ABERTURA:						DATA AB	0	
+		NÚMERO DE SÉRIE:						NUM.SER	0	
+								LOC.EXP.	0	
+EQUIPAMENTO:				ESTADO:						
+LOCAL PARA EXPORTAR:								eqp	MEGÔHMETRO	
+								estado		
+								EQUIPAMENTO	ESTADO	
+								SURGE 4kV	NOVO	Z:\LHF\PROJETOS\Surge Teste - Sinapse\SURGE TESTE - GESTÃO DA QUALIDADE
+								SURGE 15kV	VENDA	Z:\LHF\PROJETOS\Surge Teste - Sinapse\SURGE TESTE - GESTÃO DA QUALIDADE
+								MEGÔHMETRO	ALUGUEL	Z:\LHF\PROJETOS\Megohmetro LHF\MEGOHMETRO - GESTÃO DA QUALIDADE
+MONTAGEM (MEGÔHMETRO)								MILIOHMÍMETRO	GARANTIA	Z:\LHF\PROJETOS\Miliohmimetro LHF\MILIOHMIMETRO - GESTÃO DA QUALIDADE
+A	PENDENTE	Verificar se todos os parafusos da mecânica estão apertados							AVULSO	
+A	PENDENTE	Verificar se o parafuso do aterramento esta apertado								
+A	PENDENTE	Verificar membrana na maleta interna, externa e na tela								
+A	PENDENTE	Verificar organização interna dos cabos com abraçadeiras ou  Termo-encolhíveis								
+A	PENDENTE	Passar cola quente em todos os cabos com conexão KK, nos parafusos da placa e parafusos das entradas de medição.						FELIPE RAFAEL MICHAEL		
+A	PENDENTE	Colar espuma nas laterais da maleta (10mm de altura)						GABRIEL HENRIQUE KARING		
+PRÉ-ENERGIZAÇÃO (MEGÔHMETRO)								JOHNATHA ALENCAR DE SOUZA		
+		Numero de serie da placa principal						LUIZ GABRIEL CORREA		
+		Numero de serie da placa Painel frontal						RODRIGO LUIZ DOS SANTOS		
+A	PENDENTE	Verificar conexões da fonte e da placa								
+A	PENDENTE	Verificar contato das garras, medir resistência e avaliar variação Da resistência, deve ser menor que 5%								
+ENERGIZAÇÃO (MEGÔHMETRO)										
+A	PENDENTE	Testar touch screen da tela								
+A	PENDENTE	Testar botão físico de “iniciar teste” e "parar"								
+SOFTWARE (MEGÔHMETRO)										
+A	PENDENTE	Atualizar o software para a versão mais recente								
+A	PENDENTE	Verificar repetibilidade das medições em todas as faixas								
+A	PENDENTE	Executar calibração em todas as faixas de medição conforme tabela								
+					APLICADO	SAÍDA				
+					1000	0				
+					2000	0				
+					3000	0				
+					4000	0				
+					5000	0				
+FINALIZAÇÃO (MEGÔHMETRO)										
+A	PENDENTE	Executar testes conforme procedimento.								
+A	PENDENTE	Após todos os testes, passar cola quente nos pontos necessários								
+A	PENDENTE	Colar número de série no manual e maleta e bolsa dos cabos								
+A	PENDENTE	Enviar manual impresso, certificado de calibração, cabos com  Garras e cabo de alimentação								
+A	PENDENTE	Executar teste de vibração de 1Hz até 10Hz durante 10 minutos								
+A	PENDENTE	Após a vibração executar teste de 30min em 5K								
+A	PENDENTE	Fazer teste de conexão com o Software e gerar o relatório de  Dados.								
+A	PENDENTE	Fazer o lacre internamente, tirar foto e salvar na pasta do  Megôhmetro								
+A	PENDENTE	Enviado para a calibração externa								
+		Numero do Certificado de calibração								
+OBSERVAÇÕES FINAIS (MEGÔHMETRO)										
+MONTADOR (nome):										
+TESTADOR (nome):										
+EMBALADOR/FINALIZADOR (nome):										
+Observações finais relevantes:										

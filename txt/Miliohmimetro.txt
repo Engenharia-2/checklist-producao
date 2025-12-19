@@ -1,0 +1,270 @@
+		OP/OS:				
+		DATA ABERTURA:				
+		NÚMERO DE SÉRIE:				
+						
+EQUIPAMENTO:				ESTADO:		
+LOCAL PARA EXPORTAR:						
+						
+						
+						
+						
+						
+MONTAGEM (MEGÔHMETRO)						
+A	PENDENTE	Verificar se todos os parafusos da mecânica estão apertados				
+A	PENDENTE	Verificar se o parafuso do aterramento esta apertado				
+A	PENDENTE	Verificar membrana na maleta interna, externa e na tela				
+A	PENDENTE	Verificar organização interna dos cabos com abraçadeiras ou  Termo-encolhíveis				
+A	PENDENTE	Passar cola quente em todos os cabos com conexão KK, nos parafusos da placa e parafusos das entradas de medição.				
+A	PENDENTE	Colar espuma nas laterais da maleta (10mm de altura)				
+PRÉ-ENERGIZAÇÃO (MEGÔHMETRO)						
+		Numero de serie da placa principal				
+		Numero de serie da placa Painel frontal				
+A	PENDENTE	Verificar conexões da fonte e da placa				
+A	PENDENTE	Verificar contato das garras, medir resistência e avaliar variação Da resistência, deve ser menor que 5%				
+ENERGIZAÇÃO (MEGÔHMETRO)						
+A	PENDENTE	Testar touch screen da tela				
+A	PENDENTE	Testar botão físico de “iniciar teste” e "parar"				
+SOFTWARE (MEGÔHMETRO)						
+A	PENDENTE	Atualizar o software para a versão mais recente				
+A	PENDENTE	Verificar repetibilidade das medições em todas as faixas				
+A	PENDENTE	Executar calibração em todas as faixas de medição conforme tabela				
+					APLICADO	SAÍDA
+					1000	0
+					2000	0
+					3000	0
+					4000	0
+					5000	0
+FINALIZAÇÃO (MEGÔHMETRO)						
+A	PENDENTE	Executar testes conforme procedimento.				
+A	PENDENTE	Após todos os testes, passar cola quente nos pontos necessários				
+A	PENDENTE	Colar número de série no manual e maleta e bolsa dos cabos				
+A	PENDENTE	Enviar manual impresso, certificado de calibração, cabos com  Garras e cabo de alimentação				
+A	PENDENTE	Executar teste de vibração de 1Hz até 10Hz durante 10 minutos				
+A	PENDENTE	Após a vibração executar teste de 30min em 5K				
+A	PENDENTE	Fazer teste de conexão com o Software e gerar o relatório de  Dados.				
+A	PENDENTE	Fazer o lacre internamente, tirar foto e salvar na pasta do  Megôhmetro				
+A	PENDENTE	Enviado para a calibração externa				
+		Numero do Certificado de calibração				
+OBSERVAÇÕES FINAIS (MEGÔHMETRO)						
+MONTADOR (nome):						
+TESTADOR (nome):						
+EMBALADOR/FINALIZADOR (nome):						
+Observações finais relevantes:						
+						
+						
+						
+ANÁLISE INICIAL (SURGE 4kV)						
+		Modelo do equipamento: bancada ou maleta?				
+		Modelo/tipo do computador:				
+		Modelo do osciloscópio:				
+		Modelo da tela:				
+		Número do computador (ao abrir o software do surge):				
+		Nome da versão de software do surge:				
+		Data da versão de software do surge:				
+		Licenciar Windows. Número:				
+		Licenciar Windows. Versão (HOME/PRO):				
+ANÁLISE INICIAL - HARDWARE (SURGE 4kV)						
+A	PENDENTE	Verificar pontos de aterramento da carcaça e componentes.  Negativo das fontes deve ser aterrado. Negativos das saídas  (garras pretas) deve ser aterrado.				
+A	PENDENTE	Posição de conectores USB, RJ45 – conforme impresso  na  Membrana				
+A	PENDENTE	Arruelas de pressão em todos os parafusos				
+A	PENDENTE	Verificar aperto do parafuso TERRA do equipamento				
+		Numero de série placa principal				
+		Numero de série placa de disparo 				
+		Numero de série fonte				
+		Numero de série placa de relés				
+ENERGIZAÇÃO (SURGE 4kV)						
+A	PENDENTE	Entrar na BIOS e configurar conforme descritivo.				
+A	PENDENTE	Utilizando o PENDRIVE padrão de imagem para o Windows,  conforme procedimento adicionar a imagem do Windows 10 no  equipamento e configurar a placa ETHERNET conforme  Procedimento.				
+A	PENDENTE	Aumentar o brilho da tela ao máximo				
+A	PENDENTE	Testar funcionamento das USB's e Ethernet				
+A	PENDENTE	Testar touch-screen da tela				
+A	PENDENTE	Teste de placas - executar teste de tensão e aplicar ganho no  Software do surge				
+A	PENDENTE	Verificar se buzzer está audível (funcionando)				
+A	PENDENTE	Verificar se a ultima versão do software esta atualizada no surge				
+A	PENDENTE	Programa surge iniciar automaticamente (shell:startup)				
+A	PENDENTE	Configurar o Windows para não desligar nem suspender (nunca).  Configurar o botão de energia para "Desligar" e o botão de  Suspensão para "nada a fazer".				
+A	PENDENTE	Verificar o funcionamento do LED RGB na face do produto. Deve  Acender em branco ao iniciar o software.				
+A	PENDENTE	Testar funcionamento do Wi-Fi				
+A	PENDENTE	Instalar softwares necessários (conforme descritivo).  PRINCIPALMENTE “Team Viewer 12” e software do  Osciloscópio Hantek.				
+CALIBRAÇÃO SURGE (4kV)						
+A	PENDENTE	Abrir software da HANTEK e realizar a calibração do CH1.  Essa calibração é responsável para deixar a linha do gráfico mais  Próximo o possível do ponto zero.				
+A	PENDENTE	Executar calibração da tensão DC de saída (com ax=1 e b=0 no  Software). NÃO RECALIBRAR se for conserto.				
+		Número da calibração (fornecido pelo laboratório)				
+A	PENDENTE	Finalizar calibração com bobina/surto: multiplicador de surto e  Zeramento de  400, 800, 1600, 3900V				
+A	PENDENTE	Testar funcionalidade de todos os 12 relês (contra todos).  Realizar com apenas 2 cabos (1 bobina) conectados por vez.				
+A	PENDENTE	Fazer testes 1-2, 2-3, 3-1 e 1-4, 2-5, 3-6				
+A	PENDENTE	Copiar arquivo padrão de cadastros (profile.3DB) para a pasta do  Surge. Testar com bobina 6 cabos, motor 3 cabos, etc. NÃO MEXER  Se for conserto.				
+FINALIZAÇÃO (SURGE 4kV)						
+A	PENDENTE	Inserir Logomarca do cliente				
+A	PENDENTE	Apagar demais padrões de testes (eventualmente criados durante  Testes na LHF). NÃO APAGAR se for conserto.				
+A	PENDENTE	Ajustar parâmetro para a tela não desligar nunca.				
+A	PENDENTE	Executar testes repetitivos em toda a faixa de tensões de saída,  Principalmente na tensão máxima				
+A	PENDENTE	Alimentar com 110-127Vca e testar se tensão de saída chega na  Máxima				
+A	PENDENTE	Testar Relatórios  de testes (PDF e .CSV)				
+A	PENDENTE	Inspeção mecânica/visual final: parafusos, encaixes, colas, riscos,  Sujeira, cabos, suporte da tela.				
+A	PENDENTE	Limpar com ar comprimido				
+A	PENDENTE	Etiqueta com a licença do Windows no surge				
+A	PENDENTE	Etiqueta com numero de série na tampa da maleta. Etiquetas de  número de série, de entrada de energia e de calibração dentro  Da maleta.				
+A	PENDENTE	Disponibilizar manuais no desktop (utilização e calibração)				
+A	PENDENTE	Incluir manual do usuário/operação – cópia física				
+A	PENDENTE	Garras vermelhas: 1, 2 e 3. Pretas: 4				
+A	PENDENTE	Incluir cabo de alimentação				
+A	PENDENTE	Cadastrar FT e FE no teste rápido				
+A	PENDENTE	3 cabos bobina e motor refazer o cadastro com teste inverso e  Mudar para 2k. 				
+A	PENDENTE	configurar opção de matriz de relés na aba de opções /hardware				
+A	PENDENTE	Ajustar logomarca LHF no desktop, configurar como "ajustado"				
+A	PENDENTE	Verificar botoes e LED’s: apertar bem!				
+A	PENDENTE	Abraçadeira nos cabos: não deixar com pontas				
+A	PENDENTE	Apertar prensa-cabos				
+A	PENDENTE	Cola-quente em todos os conectores e componentes que não  Tenham trava ou arruela de pressão				
+A	PENDENTE	Realizar teste de vibração na plataforma vibratória FAIXA DE 1Hz  À 10HZ CERCA DE 10 MIN.				
+A	PENDENTE	Executar testes repetitivos em toda a faixa de tensões de saída,  Principalmente na tensão máxima após a vibração.				
+A	PENDENTE	Limpar resultados da pasta report (deletar o arquivo report.3DB)  Antes de enviar. NÃO DELETAR se for conserto. Refazer o  Teste padrão				
+A	PENDENTE	Fazer backup da pasta do software do surge para a rede (em  “LHF\PROJETOS\Surge Teste - Sinapse\SURGE TESTE - GESTÃO  DA QUALIDADE”)				
+A	PENDENTE	Tirar print dos valores de calibração após o equipamento ser calibrado pela calibração externa e salvar nos campos abaixo				
+PRINT TELA 1						
+OBSERVAÇÕES FINAIS (SURGE 4kV)						
+MONTADOR (nome):						
+TESTADOR (nome):						
+EMBALADOR/FINALIZADOR (nome):						
+Observações finais relevantes:						
+						
+						
+						
+ANÁLISE INICIAL (SURGE 15kV)						
+		Modelo do equipamento: 4kV ou 15kV?				
+		Modelo do equipamento: bancada ou maleta?				
+		Modelo/tipo do computador				
+		Modelo do osciloscópio				
+		Modelo da tela				
+		Número do computador (ao abrir o software do surge)				
+		Nome da versão de software do surge				
+		Data da versão de software do surge				
+		Licenciar Windows número				
+		Licenciar Windows. Versão (HOME/PRO)				
+ANÁLISE INICIAL - HARDWARE (SURGE 15kV)						
+A	PENDENTE	Verificar pontos de aterramento da carcaça e componentes. Negativo das fontes deve ser aterrado. Negativos das saídas (garras pretas) deve ser aterrado				
+A	PENDENTE	Posição de conectores USB, RJ45 – conforme impresso  na membrana				
+A	PENDENTE	Arruelas de pressão em todos os parafusos				
+		Numero de série placa principal				
+		Numero de série placa de disparo 				
+		Numero de série placa controle do disparo				
+		Numero de série fonte				
+		Numero de série placa de leitura				
+ENERGIZAÇÃO (SURGE 15kV)						
+A	PENDENTE	Entrar na BIOS e configurar conforme descritivo.				
+A	PENDENTE	Aumentar o brilho da tela ao máximo				
+A	PENDENTE	Testar funcionamento das USB's e Ethernet				
+A	PENDENTE	Testar touch-screen da tela				
+A	PENDENTE	Teste de placas - executar teste de tensão e aplicar ganho no software do surge				
+A	PENDENTE	Verificar se buzzer está audível (funcionando)				
+A	PENDENTE	Verificar se a ultima versão do software esta atualizada no surge				
+A	PENDENTE	Programa surge iniciar automaticamente (shell:startup)				
+A	PENDENTE	Configurar o Windows para não desligar nem suspender (nunca). Configurar o botão de energia para "Desligar" e o botão de suspensão para "nada a fazer".				
+A	PENDENTE	Verificar o funcionamento do LED RGB na face do produto. Deve acender em branco ao iniciar o software.				
+A	PENDENTE	Testar funcionamento do Wi-Fi				
+A	PENDENTE	Instalar softwares necessários (conforme descritivo). PRINCIPALMENTE “Team Viewer 12” e software do Osciloscópio Hantek.				
+CALIBRAÇÃO SURGE (15kV)						
+A	PENDENTE	Abrir software da HANTEK e realizar a calibração do CH1. Essa calibração é responsável para deixar a linha do gráfico mais próximo o possível do ponto zero.				
+A	PENDENTE	Executar calibração da tensão DC de saída (com ax=1 e b=0 no software). NÃO RECALIBRAR se for conserto.				
+		Número da calibração (fornecido pelo laboratório)				
+FINALIZAÇÃO (SURGE 15kV)						
+A	PENDENTE	Inserir Logomarca do cliente				
+A	PENDENTE	Apagar demais padrões de testes (eventualmente criados durante testes na LHF). NÃO APAGAR se for conserto.				
+A	PENDENTE	Ajustar parâmetro para a tela não desligar nunca.				
+A	PENDENTE	Executar testes repetitivos em toda a faixa de tensões de saída, principalmente na tensão máxima				
+A	PENDENTE	Alimentar com 110-127Vca e testar tomada com fase invertida.				
+A	PENDENTE	Alimentar com 110-127Vca e testar se tensão de saída chega na máxima				
+A	PENDENTE	Testar Relatórios  de testes (PDF e .CSV)				
+A	PENDENTE	Inspeção mecânica/visual final: parafusos, encaixes, colas, riscos, sujeira, cabos, suporte da tela.				
+A	PENDENTE	Limpar com ar comprimido				
+A	PENDENTE	Etiqueta com a licença do Windows no surge				
+A	PENDENTE	Etiqueta com numero de série na tampa da maleta. Etiquetas de número de série, de entrada de energia e de calibração dentro da maleta.				
+A	PENDENTE	Disponibilizar manuais no desktop (utilização e calibração)				
+A	PENDENTE	Incluir manual do usuário/operação – cópia física				
+A	PENDENTE	Garras vermelhas: 1. Pretas: 2 e 3				
+A	PENDENTE	Incluir cabo de alimentação				
+A	PENDENTE	Cadastrar FT e FE no teste rápido				
+A	PENDENTE	3 cabos bobina e motor refazer o cadastro com teste inverso e mudar para 2k. 				
+A	PENDENTE	Ajustar logomarca LHF no Desktop, configurar como "ajustado"				
+A	PENDENTE	Verificar botoes e LED’s: apertar bem!				
+A	PENDENTE	Abraçadeira nos cabos: não deixar com pontas				
+A	PENDENTE	Apertar Prensa-cabos				
+A	PENDENTE	Cola-quente em todos os conectores e componentes que não tenham trava ou arruela de pressão				
+A	PENDENTE	Realizar teste de vibração na plataforma vibratória FAIXA DE 1HZ À 10HZ CERCA DE 10 MIN				
+A	PENDENTE	Executar testes repetitivos em toda a faixa de tensões de saída, principalmente na tensão máxima após a vibração				
+A	PENDENTE	Limpar resultados da pasta report (deletar o arquivo report.3DB) antes de enviar. NÃO DELETAR se for conserto. Refazer o teste padrão				
+A	PENDENTE	Fazer backup da pasta do software do surge para a rede (em “LHF\PROJETOS\Surge Teste - Sinapse\SURGE TESTE - GESTÃO DA QUALIDADE”)				
+A	PENDENTE	Tirar print dos valores de calibração após o equipamento ser calibrado pela calibração externa e salvar nos campos abaixo				
+PRINT TELA 1						
+OBSERVAÇÕES FINAIS (SURGE 15kV)						
+MONTADOR (nome):						
+TESTADOR (nome):						
+EMBALADOR/FINALIZADOR (nome):						
+Observações finais relevantes:						
+						
+						
+						
+ANÁLISE INICIAL (MILIOHMÍMETRO)						
+		Modelo do equipamento (bancada, maleta)?				
+		Modelo/tipo do computador:				
+		Modelo da tela:				
+A	PENDENTE	Revisão da placa de circuito impresso:				
+		Versão do software:				
+		Data da calibração:				
+		Validade da Calibração:				
+MECÂNICA (MILIOHMÍMETRO)						
+A	PENDENTE	Verificar se todos os parafusos da mecânica estão apertados				
+A	PENDENTE	Verificar se o parafuso do aterramento esta apertado				
+A	PENDENTE	Verificar membrana na maleta interna, externa e na tela				
+A	PENDENTE	Verificar organização interna dos cabos com abraçadeiras ou termo-encolhíveis				
+A	PENDENTE	Modelo e capacidade do Pendrive				
+PRÉ-ENERGIZAÇÃO (MILIOHMÍMETRO)						
+A	PENDENTE	Verificar conexões das fontes e da placa, desconectar USB's da placa e cabo fita, conectar apenas depois de energizar a primeira vez				
+A	PENDENTE	Anexar número de série do produto ao número de série da placa na planilha de assistência de placa				
+ENERGIZAÇÃO (MILIOHMÍMETRO)						
+A	PENDENTE	Verificar a tensão da fonte 5V ANTES DE CALIBRAR, ajustar em 4.95V				
+A	PENDENTE	Testar touch screen da tela				
+A	PENDENTE	Testar USB e Ethernet				
+A	PENDENTE	Testar botão físico de “iniciar teste”				
+SOFTWARE (MILIOHMÍMETRO)						
+A	PENDENTE	Atualizar o software para a versão mais recente				
+A	PENDENTE	Testar a conexão do Wi-Fi				
+A	PENDENTE	Verificar repetibilidade das medições em todas as faixas				
+A	PENDENTE	Executar calibração em todas as faixas de medição				
+A	PENDENTE	Colocar os arquivos do pendrive na pasta "mohm-lhf/data", após a calibração				
+A	PENDENTE	Testar a geração de relatório PDF para pendrive. 				
+A	PENDENTE	Deixar valores de configuração no padrão (temperatura de referência 25, numero aquisições 5, tempo estabilização 1)				
+A	PENDENTE	Inserir número de série do produto na interface gráfica (menu 'configuração')				
+A	PENDENTE	Compilar o software e apontar seu caminho para inicializar junto ao miliohmímetro				
+A	PENDENTE	Colocar/configurar o micro SD para somente leitura				
+CALIBRAÇÃO INTERNA (MILIOHMÍMETRO)						
+A	PENDENTE	Calibrar todas as escalas visando identificar possíveis falhas de medição				
+A	PENDENTE	Realizar calibração da bateria				
+A	PENDENTE	realizar calibração da temperatura com utilização do KAPPO (utilizar o gráfico abaixo).				
+				Resistência KAPPO	Temperatura padrão	Temperatura mili.
+						
+				100	0	0
+				109,73	25	0
+				119,4	50	0
+				128,99	75	0
+				138,51	100	0
+FINALIZAÇÃO (MILIOHMÍMETRO)						
+A	PENDENTE	Após todos os testes, passar cola quente nas entradas USB's e HDMI				
+A	PENDENTE	Colar número de série no manual				
+A	PENDENTE	Colar espuma nas paredes da maleta				
+A	PENDENTE	Executar teste de vibração de 1Hz até 10Hz durante 10 minutos				
+A	PENDENTE	Testar todas as escalas após a vibração				
+A	PENDENTE	Tirar print dos valores de calibração após o equipamento ser calibrado pela calibração externa e salvar nos campos abaixo				
+PRINT TELA 1						
+PRINT TELA 2						
+A	PENDENTE	Copiar os valores da calibração para um pendrive atráves do botão "Salvar" na tela de "Valores Calibrados", e salvar esse arquivo na pasta de "Gestão de qualidade"				
+A	PENDENTE	Copiar o arquivo ALLDATA do pendrive para a pasta de GESTÃO DA QUALIDADE do equipamento.				
+		Número do Certificado de calibração				
+A	PENDENTE	Verificar contato das garras, medir resistência e avaliar variação da resistência, deve ser menor que 5%				
+A	PENDENTE	Enviar manual impresso, certificado de calibração, cabos com garras e cabo de alimentação				
+OBSERVAÇÕES FINAIS (SURGE 15kV)						
+MONTADOR (nome):						
+TESTADOR (nome):						
+EMBALADOR/FINALIZADOR (nome):						
+Observações finais relevantes:						
