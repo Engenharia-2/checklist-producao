@@ -5,8 +5,8 @@ import { useSessionStore } from '@/src/store/sessionStore';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, View } from 'react-native';
-import styled from 'styled-components/native';
+import { ActivityIndicator, Alert, View, Text, TextInput, ScrollView } from 'react-native';
+import { styles } from './styles';
 
 type RootStackParamList = {
     Home: undefined;
@@ -19,54 +19,6 @@ type RootStackParamList = {
 
 type EntryScreenRouteProp = RouteProp<RootStackParamList, 'Entry'>;
 type EntryScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Entry'>;
-
-const Container = styled.ScrollView.attrs({
-    contentContainerStyle: {
-        flexGrow: 1,
-        justifyContent: 'space-between',
-        flexDirection: 'column',
-    }
-})`
-  background-color: ${({ theme }) => theme.colors.background};
-  padding: ${({ theme }) => theme.spacing.lg};
-`;
-
-const MainContent = styled.View`
-    flex: 1;
-`;
-
-const Footer = styled.View`
-    padding-top: ${({ theme }) => theme.spacing.lg};
-`;
-
-const Title = styled.Text`
-  font-size: ${({ theme }) => theme.typography.sizes.xl};
-  font-weight: bold;
-  color: ${({ theme }) => theme.colors.primary};
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
-  text-align: center;
-`;
-
-const InputGroup = styled.View`
-  margin-bottom: ${({ theme }) => theme.spacing.md};
-`;
-
-const Label = styled.Text`
-  font-size: ${({ theme }) => theme.typography.sizes.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
-  font-weight: bold;
-`;
-
-const Input = styled.TextInput`
-  background-color: ${({ theme }) => theme.colors.surface};
-  border-width: 1px;
-  border-color: ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.md};
-  padding: ${({ theme }) => theme.spacing.md};
-  font-size: ${({ theme }) => theme.typography.sizes.md};
-  color: ${({ theme }) => theme.colors.text};
-`;
 
 export default function EntryScreen() {
     const navigation = useNavigation<EntryScreenNavigationProp>();
@@ -93,7 +45,7 @@ export default function EntryScreen() {
     const handleSaveAndNavigate = async () => {
         if (!session) return;
 
-        if (!productModel) { // Using productModel as selectedProduct
+        if (!productModel) {
             Alert.alert('Atenção', 'Selecione um produto para continuar.');
             return;
         }
@@ -107,7 +59,6 @@ export default function EntryScreen() {
         });
         setIsSaving(false);
 
-        // Navigate to specific checklist based on selection
         if (productModel === 'Miliohmimetro') {
             navigation.navigate('Miliohmimetro', { id });
         } else if (productModel === 'Megohmetro') {
@@ -139,35 +90,37 @@ export default function EntryScreen() {
 
     if (!session) {
         return (
-            <Container>
+            <View style={styles.container}>
                 <ActivityIndicator size="large" color="#000" />
-            </Container>
+            </View>
         );
     }
 
     return (
-        <Container>
-            <MainContent>
-                <Title>Configuração da Inspeção</Title>
+        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+            <View style={styles.mainContent}>
+                <Text style={styles.title}>Configuração da Inspeção</Text>
 
-                <InputGroup>
-                    <Label>Número da OP</Label>
-                    <Input
+                <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Número da OP</Text>
+                    <TextInput
+                        style={styles.input}
                         value={osNumber}
                         onChangeText={setOsNumber}
                         placeholder="Ex: 12345"
                         keyboardType="numeric"
                     />
-                </InputGroup>
+                </View>
 
-                <InputGroup>
-                    <Label>Número de Série</Label>
-                    <Input
+                <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Número de Série</Text>
+                    <TextInput
+                        style={styles.input}
                         value={serialNumber}
                         onChangeText={setSerialNumber}
                         placeholder="Ex: SN-9999"
                     />
-                </InputGroup>
+                </View>
 
                 <ProductSelect
                     label="Modelo do Equipamento"
@@ -181,9 +134,9 @@ export default function EntryScreen() {
                     isLoading={isSaving}
                     disabled={!osNumber || !serialNumber || !productModel || isGeneratingReport}
                 />
-            </MainContent>
+            </View>
 
-            <Footer>
+            <View style={styles.footer}>
                 <CustomButton
                     title={isGeneratingReport ? "Gerando Relatório..." : "Gerar Relatório"}
                     onPress={handleGenerateReport}
@@ -195,7 +148,7 @@ export default function EntryScreen() {
                     title="Voltar para Home"
                     onPress={() => navigation.navigate('Home')}
                 />
-            </Footer>
-        </Container>
+            </View>
+        </ScrollView>
     );
 }

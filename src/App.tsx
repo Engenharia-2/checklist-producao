@@ -8,8 +8,8 @@ import MegohmetroScreen from './pages/Checklist/MegohmetroScreen';
 import MiliohmimetroScreen from './pages/Checklist/MiliohmimetroScreen';
 import Surge15kvScreen from './pages/Checklist/Surge15kvScreen';
 import Surge4kvScreen from './pages/Checklist/Surge4kvScreen';
-import EntryScreen from './pages/EntryScreen';
-import HomeScreen from './pages/HomeScreen';
+import EntryScreen from './pages/Entry';
+import HomeScreen from './pages/Home';
 
 const Stack = createStackNavigator();
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView } from 'react-native';
+import { View } from 'react-native';
 import { useImageManager } from '../../../hooks/useImageManager';
 import { CameraModal } from '../../Camera/';
 import { ImageAttachment } from '../../Image/ImageAttachment';
@@ -21,7 +21,7 @@ export const ImageStep: React.FC<StepProps> = ({ sessionId }) => {
     } = useImageManager(sessionId, 'surge4kv_ident_prints');
 
     return (
-        <ScrollView style={styles.container}>
+        <View style={styles.imageStepContainer}>
             <ImageAttachment
                 attachedImages={images}
                 onPickImage={pickImage}
@@ -36,6 +36,6 @@ export const ImageStep: React.FC<StepProps> = ({ sessionId }) => {
                     closeCamera();
                 }}
             />
-        </ScrollView>
+        </View>
     );
 };

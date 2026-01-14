@@ -1,11 +1,11 @@
 import React from 'react';
 import { ScrollView } from 'react-native';
+import { useChecklistItem } from '../../../hooks/useChecklistItem';
 import { useSessionStore } from '../../../store/sessionStore';
 import CustomInput from '../../ui/Input/CustomInput';
 import CustomTitle from '../../ui/Title/CustomTitle';
 import { ChecklistItem } from '../ChecklistItem';
 import { styles } from '../styles';
-import { useChecklistItem } from '../../../hooks/useChecklistItem';
 
 interface StepProps {
     sessionId: string;
@@ -29,19 +29,6 @@ export const IdentificationStep: React.FC<StepProps> = ({ sessionId }) => {
                 placeholder="Número ou código"
             />
 
-            <ChecklistItem
-                id="final_verify_claws"
-                label="Verificar contato das garras, medir resistência e avaliar variação da resistência, deve ser menor que 5%"
-                isChecked={checklist['final_verify_claws'] || false}
-                onToggle={(id, val) => handleChange(id, val)}
-            />
-            <ChecklistItem
-                id="final_send_manual"
-                label="Enviar manual impresso, certificado de calibração, cabos com garras e cabo de alimentação"
-                isChecked={checklist['final_send_manual'] || false}
-                onToggle={(id, val) => handleChange(id, val)}
-            />
-
             <CustomInput
                 label="Montador (nome)"
                 value={checklist['final_montador'] || ''}
@@ -61,6 +48,19 @@ export const IdentificationStep: React.FC<StepProps> = ({ sessionId }) => {
                 placeholder="Observações..."
                 multiline
                 numberOfLines={3}
+            />
+
+            <ChecklistItem
+                id="final_verify_claws"
+                label="Verificar contato das garras, medir resistência e avaliar variação da resistência, deve ser menor que 5%"
+                isChecked={checklist['final_verify_claws'] || false}
+                onToggle={(id, val) => handleChange(id, val)}
+            />
+            <ChecklistItem
+                id="final_send_manual"
+                label="Enviar manual impresso, certificado de calibração, cabos com garras e cabo de alimentação"
+                isChecked={checklist['final_send_manual'] || false}
+                onToggle={(id, val) => handleChange(id, val)}
             />
 
         </ScrollView>

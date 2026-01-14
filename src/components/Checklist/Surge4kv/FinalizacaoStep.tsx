@@ -4,19 +4,18 @@ import { useSessionStore } from '../../../store/sessionStore';
 import CustomTitle from '../../ui/Title/CustomTitle';
 import { ChecklistItem } from '../ChecklistItem';
 import { styles } from '../styles';
+import { useChecklistItem } from '../../../hooks/useChecklistItem';
 
 interface StepProps {
     sessionId: string;
 }
 
 export const FinalizacaoStep: React.FC<StepProps> = ({ sessionId }) => {
-    const { sessions, updateChecklistItem } = useSessionStore();
+    const { sessions } = useSessionStore();
     const session = sessions.find(s => s.id === sessionId);
     const checklist = session?.checklist || {};
 
-    const handleChange = (key: string, value: boolean | string) => {
-        updateChecklistItem(sessionId, { [key]: value });
-    };
+    const { handleChange } = useChecklistItem(sessionId);
 
     return (
         <ScrollView contentContainerStyle={styles.container}>

@@ -29,6 +29,8 @@ const Header = styled.View`
 const StepIndicator = styled.Text`
   font-size: 14px;
   color: #666;
+  display: flex;
+  text-align: center;
 `;
 
 export default function Surge15kvScreen() {

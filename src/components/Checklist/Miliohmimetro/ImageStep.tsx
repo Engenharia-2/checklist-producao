@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView } from 'react-native';
+import { View } from 'react-native';
 import { useImageManager } from '../../../hooks/useImageManager';
 import { CameraModal } from '../../Camera/';
 import { ImageAttachment } from '../../Image/ImageAttachment';
@@ -22,7 +22,7 @@ export const ImageStep: React.FC<ImageStepProps> = ({ sessionId }) => {
     } = useImageManager(sessionId, 'images');
 
     return (
-        <ScrollView style={styles.container}>
+        <View style={styles.imageStepContainer}>
             <CustomTitle title="Anexo de Imagens" />
             <ImageAttachment
                 attachedImages={images}
@@ -38,6 +38,6 @@ export const ImageStep: React.FC<ImageStepProps> = ({ sessionId }) => {
                     closeCamera();
                 }}
             />
-        </ScrollView>
+        </View>
     );
 };
