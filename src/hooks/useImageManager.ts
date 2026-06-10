@@ -2,18 +2,27 @@ import { useState } from 'react';
 import { useSessionStore } from '../store/sessionStore';
 import { useImagePicker } from './useImagePicker';
 import { usePermissions } from './usePermissions';
+import { apiService } from '../services/apiService';
 
 export const useImageManager = (sessionId: string, imageKey: string) => {
     const { sessions, updateChecklistItem } = useSessionStore();
     const session = sessions.find(s => s.id === sessionId);
-    const images: string[] = session?.checklist?.[imageKey] || [];
+    const answers = (session as any)?.answers || {};
+    const images: string[] = answers[imageKey] || [];
 
     const [isCameraVisible, setIsCameraVisible] = useState(false);
     const { requestCameraPermission } = usePermissions();
 
-    const handleImageOutput = (uri: string) => {
-        const newImages = [...images, uri];
-        updateChecklistItem(sessionId, { [imageKey]: newImages });
+    const handleImageOutput = async (uri: string) => {
+        try {
+            const remoteUrl = await apiService.uploadImage(uri);
+            if (remoteUrl) {
+                const newImages = [...images, remoteUrl];
+                updateChecklistItem(sessionId, { [imageKey]: newImages });
+            }
+        } catch (error) {
+            console.error('Error in handleImageOutput:', error);
+        }
     };
 
     const { pickImage, processImage } = useImagePicker(handleImageOutput);

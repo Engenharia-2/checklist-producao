@@ -3,6 +3,7 @@ import { Session } from "../../types/session";
 export type ReportData = Session;
 
 export interface AttachedImage {
+    id?: string | number;
     uri: string;
-    // You can add other properties like caption if needed
+    status?: 'uploading' | 'uploaded' | 'error' | 'deleting';
 }

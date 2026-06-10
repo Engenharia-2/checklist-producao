@@ -9,6 +9,7 @@ export interface Session {
     endDate?: string; // ISO string
     serialNumber?: string;
     productModel?: string;
+    formId?: string;
     status: SessionStatus;
     items: any[]; // To be defined later
     checklist: Record<string, any>; // Stores step data

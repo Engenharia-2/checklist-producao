@@ -1,6 +1,6 @@
 import { Check, ChevronDown } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { FlatList, Modal } from 'react-native';
+import { FlatList, Modal, ActivityIndicator } from 'react-native';
 import styled from 'styled-components/native';
 
 const Container = styled.View`
@@ -42,7 +42,7 @@ const ModalContent = styled.View`
   border-top-left-radius: ${({ theme }) => theme.borderRadius.lg};
   border-top-right-radius: ${({ theme }) => theme.borderRadius.lg};
   padding: ${({ theme }) => theme.spacing.lg};
-  max-height: 50%;
+  max-height: 70%;
 `;
 
 const OptionItem = styled.TouchableOpacity`
@@ -59,41 +59,65 @@ const OptionText = styled.Text`
   color: ${({ theme }) => theme.colors.text};
 `;
 
-const PRODUCTS = ['Miliohmimetro', 'Megohmetro', 'Surge test 4kv', 'Surge Test 15kv'];
-
-interface ProductSelectProps {
-    label: string;
-    value: string;
-    onSelect: (value: string) => void;
+interface DropdownOption {
+    id: string;
+    name: string;
 }
 
-export const ProductSelect: React.FC<ProductSelectProps> = ({ label, value, onSelect }) => {
+interface CustomDropdownProps {
+    label: string;
+    value: string; // The text to display for the selected value
+    onSelect: (id: string, name: string) => void;
+    options: DropdownOption[];
+    placeholder?: string;
+    isLoading?: boolean;
+    emptyMessage?: string;
+}
+
+export const CustomDropdown: React.FC<CustomDropdownProps> = ({ 
+    label, 
+    value, 
+    onSelect, 
+    options,
+    placeholder = 'Selecione uma opção',
+    isLoading = false,
+    emptyMessage = 'Nenhuma opção disponível'
+}) => {
     const [modalVisible, setModalVisible] = useState(false);
 
     return (
         <Container>
             <Label>{label}</Label>
             <SelectButton onPress={() => setModalVisible(true)}>
-                <SelectedText hasValue={!!value}>{value || 'Selecione um produto'}</SelectedText>
+                <SelectedText hasValue={!!value}>{value || placeholder}</SelectedText>
                 <ChevronDown size={20} color="#666" />
             </SelectButton>
 
             <Modal visible={modalVisible} transparent animationType="slide">
                 <ModalOverlay onPress={() => setModalVisible(false)}>
                     <ModalContent>
-                        <FlatList
-                            data={PRODUCTS}
-                            keyExtractor={(item) => item}
-                            renderItem={({ item }) => (
-                                <OptionItem onPress={() => {
-                                    onSelect(item);
-                                    setModalVisible(false);
-                                }}>
-                                    <OptionText>{item}</OptionText>
-                                    {value === item && <Check size={20} color="#000" />}
-                                </OptionItem>
-                            )}
-                        />
+                        {isLoading ? (
+                            <ActivityIndicator size="large" color="#000" style={{ margin: 20 }} />
+                        ) : (
+                            <FlatList
+                                data={options}
+                                keyExtractor={(item) => item.id}
+                                ListEmptyComponent={
+                                    <OptionText style={{ textAlign: 'center', padding: 20, color: '#999' }}>
+                                        {emptyMessage}
+                                    </OptionText>
+                                }
+                                renderItem={({ item }) => (
+                                    <OptionItem onPress={() => {
+                                        onSelect(item.id, item.name);
+                                        setModalVisible(false);
+                                    }}>
+                                        <OptionText>{item.name}</OptionText>
+                                        {value === item.name && <Check size={20} color="#000" />}
+                                    </OptionItem>
+                                )}
+                            />
+                        )}
                     </ModalContent>
                 </ModalOverlay>
             </Modal>

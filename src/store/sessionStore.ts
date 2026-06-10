@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { create } from 'zustand';
-import { initDatabase } from '../database';
-import { sessionService } from '../services/sessionService';
+import { apiService } from '../services/apiService';
 import { Session } from '../types/session';
 
 interface SessionState {
@@ -25,8 +24,8 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     initializeStore: async () => {
         set({ isLoading: true });
         try {
-            await initDatabase();
-            const sessions = await sessionService.getSessions();
+            // Busca diretamente da API central agora
+            const sessions = await apiService.getSessions();
             set({ sessions });
         } catch (error) {
             console.error('Failed to init store:', error);
@@ -38,23 +37,24 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     createSession: async (clientName: string, osNumber: string) => {
         set({ isCreating: true });
 
-        const newId = uuidv4();
-        const newSession: Session = {
-            id: newId,
-            name: `OS ${osNumber} - ${clientName}`,
-            clientName,
-            osNumber,
-            startDate: new Date().toISOString(),
-            status: 'aberta',
-            items: [],
-            checklist: {},
-        };
-
         try {
-            await sessionService.createSession(newSession);
-            const sessions = await sessionService.getSessions(); // Refresh list
-            set({ sessions });
-            return newId;
+            // Cria a sessão na API Central
+            const newSessionApi = await apiService.createSession();
+            
+            if (!newSessionApi) throw new Error("Falha ao criar na API");
+
+            // Atualiza a sessão com os metadados iniciais
+            const updates = {
+                clientName,
+                osNumber,
+                name: `OS ${osNumber} - ${clientName}`
+            };
+            
+            await apiService.updateSession(newSessionApi.id, updates);
+            
+            // Recarrega a lista do servidor
+            await get().initializeStore();
+            return newSessionApi.id;
         } catch (error) {
             console.error('Error creating session:', error);
             throw error;
@@ -65,7 +65,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
 
     updateSession: async (id: string, updates: Partial<Session>) => {
         try {
-            await sessionService.updateSession(id, updates);
+            await apiService.updateSession(id, updates);
 
             set((state) => ({
                 sessions: state.sessions.map((s) =>
@@ -79,7 +79,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
 
     deleteSession: async (id: string) => {
         try {
-            await sessionService.deleteSession(id);
+            await apiService.deleteSession(id);
             set((state) => ({
                 sessions: state.sessions.filter((s) => s.id !== id),
             }));
@@ -94,9 +94,9 @@ export const useSessionStore = create<SessionState>((set, get) => ({
 
         const lowerQuery = query.toLowerCase();
         return sessions.filter((s) =>
-            s.name.toLowerCase().includes(lowerQuery) ||
-            s.osNumber.toLowerCase().includes(lowerQuery) ||
-            s.clientName.toLowerCase().includes(lowerQuery)
+            (s.name && s.name.toLowerCase().includes(lowerQuery)) ||
+            (s.osNumber && s.osNumber.toLowerCase().includes(lowerQuery)) ||
+            (s.clientName && s.clientName.toLowerCase().includes(lowerQuery))
         );
     },
 
@@ -105,16 +105,17 @@ export const useSessionStore = create<SessionState>((set, get) => ({
         const session = sessions.find(s => s.id === sessionId);
         if (!session) return;
 
-        const currentChecklist = session.checklist || {};
-        const newChecklist = { ...currentChecklist, ...items };
+        // O campo JSON agora é 'answers' de acordo com a API
+        const currentAnswers = (session as any).answers || {};
+        const newAnswers = { ...currentAnswers, ...items };
 
         // Optimistic update
         const updatedSessions = sessions.map(s =>
-            s.id === sessionId ? { ...s, checklist: newChecklist } : s
+            s.id === sessionId ? { ...s, answers: newAnswers } : s
         );
         set({ sessions: updatedSessions });
 
-        // Persist
-        await sessionService.updateSession(sessionId, { checklist: newChecklist });
+        // Persist na API Central
+        await apiService.updateSession(sessionId, { answers: newAnswers });
     },
 }));

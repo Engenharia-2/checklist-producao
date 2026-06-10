@@ -21,6 +21,7 @@ export const initDatabase = async () => {
       osNumber TEXT,
       serialNumber TEXT,
       productModel TEXT,
+      formId TEXT,
       status TEXT,
       startDate TEXT,
       endDate TEXT,
@@ -29,9 +30,15 @@ export const initDatabase = async () => {
   `);
 
   try {
+    await db.execAsync('ALTER TABLE sessions ADD COLUMN formId TEXT;');
+    console.log('Migration: formId column added');
+  } catch (e) {
+    // Column likely already exists
+  }
+
+  try {
     await db.execAsync('ALTER TABLE sessions ADD COLUMN checklist TEXT;');
   } catch (e) {
     // Column likely already exists
-    console.log('Migration check: checklist column might already exist');
   }
 };

@@ -1,74 +1,97 @@
-import { MaterialIcons } from '@expo/vector-icons';
 import React, { FC } from 'react';
-import { Alert, FlatList, Text, TouchableOpacity, View, Image } from 'react-native';
+import { Alert, FlatList, Image, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { styles } from './style';
+import { colors } from '../../../../theme/colors';
+import { AttachedImage } from '../../../report/types';
+import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 
-interface ImageAttachmentProps {
-    title?: string; // Optional title for the image section
-    attachedImages: string[];
-    onPickImage: () => void;
-    onTakePicture: () => void;
-    onDeleteImage: (uri: string) => void;
-}
+type ImageAttachmentProps = { 
+  attachedImages: AttachedImage[];
+  onPickImage: () => void;
+  onTakePicture: () => void;
+  onDeleteImage: (image: AttachedImage) => void;
+};
 
-export const ImageAttachment: FC<ImageAttachmentProps> = ({
-    title,
-    attachedImages,
-    onPickImage,
-    onTakePicture,
-    onDeleteImage
-}) => {
+const ImageAttachment: FC<ImageAttachmentProps> = ({ attachedImages, onPickImage, onTakePicture, onDeleteImage }) => {
 
-    const handleRemoveImage = (uri: string) => {
-        Alert.alert(
-            "Remover Imagem",
-            "Tem certeza que deseja remover esta imagem?",
-            [
-                { text: "Cancelar", style: "cancel" },
-                { text: "Remover", onPress: () => onDeleteImage(uri), style: "destructive" },
-            ]
-        );
-    };
-
-    const renderImageItem = ({ item }: { item: string }) => (
-        <View style={styles.imageItemContainer}>
-            <TouchableOpacity style={styles.removeButton} onPress={() => handleRemoveImage(item)}>
-                <Text style={styles.removeButtonText}>X</Text>
-            </TouchableOpacity>
-            <Image source={{ uri: item }} style={styles.styledImage} resizeMode="cover" />
-        </View>
+  const handleRemoveImage = (image: AttachedImage) => {
+    Alert.alert(
+      "Remover Imagem",
+      "Tem certeza que deseja remover esta imagem?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        { text: "Remover", onPress: () => onDeleteImage(image), style: "destructive" },
+      ]
     );
+  };
+
+  const renderImageItem = ({ item }: { item: AttachedImage }) => {
+    const isDeleting = item.status === 'deleting';
+    const isUploading = item.status === 'uploading';
+    const isUploaded = item.status === 'uploaded';
+    const isError = item.status === 'error';
 
     return (
-        <View style={{ flex: 1 }}>
-            {title && <Text style={styles.labelText}>{title}</Text>}
+      <View key={item.id?.toString() || item.uri} style={[styles.imageItemContainer, isDeleting ? { opacity: 0.5 } : {}]}>
+        <Image source={{ uri: item.uri }} style={styles.selectedImage} />
+        
+        {isUploading && (
+          <View style={styles.uploadingContainer}>
+            <ActivityIndicator size="small" color={colors.surface} />
+          </View>
+        )}
 
-            <View style={styles.imgButtonsContainer}>
-                <TouchableOpacity style={styles.button} onPress={onPickImage}>
-                    <MaterialIcons name="photo-library" size={32} color="#333" />
-                    <Text style={styles.buttonText}>Galeria</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={onTakePicture}>
-                    <MaterialIcons name="camera-alt" size={32} color="#333" />
-                    <Text style={styles.buttonText}>Câmera</Text>
-                </TouchableOpacity>
-            </View>
+        {isUploaded && (
+          <View style={styles.statusIndicator}>
+            <Ionicons name="checkmark-circle" size={20} color="#4CAF50" />
+          </View>
+        )}
 
-            {attachedImages.length > 0 ? (
-                <View style={styles.imagePreviewContainer}>
-                    <Text style={styles.labelText}>Imagens Anexadas:</Text>
-                    <FlatList
-                        data={attachedImages}
-                        renderItem={renderImageItem}
-                        keyExtractor={(item) => item}
-                        showsVerticalScrollIndicator={false}
-                    />
-                </View>
-            ) : (
-                <View style={styles.noImageTextContainer}>
-                    <Text style={styles.noImageText}>Nenhuma imagem anexada</Text>
-                </View>
-            )}
-        </View>
+        {isError && (
+          <View style={styles.statusIndicator}>
+            <Ionicons name="alert-circle" size={20} color={colors.error} />
+          </View>
+        )}
+
+        <TouchableOpacity 
+          onPress={() => handleRemoveImage(item)} 
+          style={styles.removeImageButton}
+          disabled={isDeleting || isUploading}
+        >
+          <Text style={[styles.buttonText, styles.buttonTextRemove]}>X</Text>
+        </TouchableOpacity>
+      </View>
     );
+  };
+
+  return (
+    <>
+      <View style={styles.imgButtonsContainer}>
+        <TouchableOpacity onPress={onPickImage} style={[styles.button, styles.buttonImg]}>
+          <Text style={styles.buttonText}>Imagem</Text>
+          <MaterialIcons name="photo-library" size={40} color={colors.textSecondary} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={onTakePicture} style={[styles.button, styles.buttonImg]}>
+          <Text style={styles.buttonText}>Foto</Text>
+          <MaterialIcons name="camera-alt" size={40} color={colors.textSecondary}/>
+        </TouchableOpacity>
+      </View>
+      {attachedImages.length > 0 ? (
+        <View style={styles.imagePreviewContainer}>
+          <Text style={styles.labelText}>Imagens Anexadas:</Text>
+          <FlatList
+            data={attachedImages}
+            renderItem={renderImageItem}
+            keyExtractor={(item) => `${item.id || item.uri}`}
+            horizontal={false} 
+            numColumns={2} 
+            scrollEnabled={false} // FlatList nested in ScrollView
+            contentContainerStyle={styles.flatListContent}
+          />
+        </View>
+      ) : null}
+    </>
+  );
 };
+
+export default ImageAttachment;

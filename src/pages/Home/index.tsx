@@ -45,8 +45,7 @@ export default function HomeScreen() {
     );
 
     const handleCreateSession = async () => {
-        const mockOS = Math.floor(Math.random() * 10000).toString();
-        const newId = await createSession('Cliente Exemplo', mockOS);
+        const newId = await createSession('Cliente Exemplo', '');
         if (newId) {
             navigation.navigate('Entry', { id: newId });
         }

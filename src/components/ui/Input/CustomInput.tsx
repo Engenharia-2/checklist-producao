@@ -49,7 +49,7 @@ export const CustomInput: FC<CustomInputProps> = ({
 }) => {
     return (
         <Container style={containerStyle}>
-            <Label style={labelStyle}>{label}</Label>
+            {/* <Label style={labelStyle}>{label}</Label> */}
             <InputContainer>
                 <StyledInput
                     placeholderTextColor="#999"
