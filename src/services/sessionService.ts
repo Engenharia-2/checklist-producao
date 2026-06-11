@@ -5,8 +5,8 @@ export const sessionService = {
     createSession: async (session: Session) => {
         const db = await getDBConnection();
         await db.runAsync(
-            `INSERT INTO sessions (id, name, clientName, osNumber, status, startDate) VALUES (?, ?, ?, ?, ?, ?);`,
-            session.id, session.name, session.clientName, session.osNumber, session.status, session.startDate
+            `INSERT INTO sessions (id, formName, osNumber, serialNumber, formId, status, startDate) VALUES (?, ?, ?, ?, ?, ?, ?);`,
+            session.id, session.formName, session.osNumber, session.serialNumber, session.formId, session.status, session.startDate
         );
     },
 

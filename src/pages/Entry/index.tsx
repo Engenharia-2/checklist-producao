@@ -27,7 +27,7 @@ export default function EntryScreen() {
         setOsNumber,
         serialNumber,
         setSerialNumber,
-        productModel,
+        equipmentName,
         products,
         isLoadingProducts,
         handleSelectProduct,
@@ -73,7 +73,7 @@ export default function EntryScreen() {
 
                 <CustomDropdown
                     label="Modelo do Equipamento"
-                    value={productModel}
+                    value={equipmentName}
                     placeholder="Selecione um equipamento"
                     options={products}
                     isLoading={isLoadingProducts}
@@ -85,7 +85,7 @@ export default function EntryScreen() {
                     title={isSaving ? "Salvando..." : "Ir para o Checklist"}
                     onPress={handleSaveAndNavigate}
                     isLoading={isSaving}
-                    disabled={!osNumber || !serialNumber || !productModel || isGeneratingReport}
+                    disabled={!osNumber || !serialNumber || !equipmentName || isGeneratingReport}
                 />
             </View>
 

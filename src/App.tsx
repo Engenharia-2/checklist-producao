@@ -5,6 +5,7 @@ import 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemeProvider } from 'styled-components/native';
 import DynamicFormScreen from './pages/Checklist/DynamicFormScreen';
+import StepsMenuScreen from './pages/Checklist/StepsMenuScreen';
 import EntryScreen from './pages/Entry';
 import HomeScreen from './pages/Home';
 
@@ -23,6 +24,7 @@ export default function App() {
                 >
                     <Stack.Screen name="Home" component={HomeScreen} />
                     <Stack.Screen name="Entry" component={EntryScreen} />
+                    <Stack.Screen name="StepsMenu" component={StepsMenuScreen} />
                     <Stack.Screen name="DynamicForm" component={DynamicFormScreen} />
                 </Stack.Navigator>
             </ThemeProvider>

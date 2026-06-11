@@ -39,13 +39,11 @@ export default function HomeScreen() {
 
     const filteredSessions = sessions.filter((s) =>
         !searchQuery ||
-        s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.osNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.clientName.toLowerCase().includes(searchQuery.toLowerCase())
+        (s.osNumber && s.osNumber.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
     const handleCreateSession = async () => {
-        const newId = await createSession('Cliente Exemplo', '');
+        const newId = await createSession('');
         if (newId) {
             navigation.navigate('Entry', { id: newId });
         }
@@ -89,7 +87,7 @@ export default function HomeScreen() {
             </View>
 
             <SearchInput
-                placeholder="Pesquisar por OP ou Cliente..."
+                placeholder="Pesquisar por OP..."
                 value={searchQuery}
                 onChangeText={setSearchQuery}
             />

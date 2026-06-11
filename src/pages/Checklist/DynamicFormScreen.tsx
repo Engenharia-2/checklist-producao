@@ -8,7 +8,9 @@ import { styles } from './styles';
 
 type RootStackParamList = {
     Home: undefined;
-    DynamicForm: { id: string; formId: string };
+    Entry: { id: string };
+    StepsMenu: { id: string; formId: string };
+    DynamicForm: { id: string; formId: string; stepId?: string };
 };
 
 type DynamicFormRouteProp = RouteProp<RootStackParamList, 'DynamicForm'>;
@@ -16,15 +18,17 @@ type DynamicFormRouteProp = RouteProp<RootStackParamList, 'DynamicForm'>;
 export default function DynamicFormScreen() {
     const route = useRoute<DynamicFormRouteProp>();
     const navigation = useNavigation();
-    const { id: sessionId, formId } = route.params;
+    const { id: sessionId, formId, stepId } = route.params;
 
     const { 
         schema, 
+        activeFields,
+        stepTitle,
         isLoading, 
         answers, 
         session, 
         handleFieldChange 
-    } = useDynamicForm(sessionId, formId);
+    } = useDynamicForm(sessionId, formId, stepId);
 
     if (isLoading || !session) {
         return (
@@ -35,10 +39,10 @@ export default function DynamicFormScreen() {
         );
     }
 
-    if (!schema || !schema.fields || schema.fields.length === 0) {
+    if (!activeFields || activeFields.length === 0) {
         return (
             <View style={styles.centerContainer}>
-                <Text style={styles.errorText}>Este formulário não possui campos configurados.</Text>
+                <Text style={styles.errorText}>Esta etapa não possui campos configurados.</Text>
                 <CustomButton title="Voltar" onPress={() => navigation.goBack()} />
             </View>
         );
@@ -46,7 +50,9 @@ export default function DynamicFormScreen() {
 
     return (
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-            {schema.fields.map((field: any) => (
+            {stepTitle ? <Text style={styles.headerTitle}>{stepTitle}</Text> : null}
+
+            {activeFields.map((field: any) => (
                 <ComponentFactory
                     key={field.id}
                     field={field}
@@ -58,8 +64,8 @@ export default function DynamicFormScreen() {
 
             <View style={styles.footer}>
                 <CustomButton
-                    title="Concluir e Salvar"
-                    onPress={() => navigation.navigate('Home')}
+                    title="Salvar e Voltar"
+                    onPress={() => navigation.goBack()}
                 />
             </View>
         </ScrollView>

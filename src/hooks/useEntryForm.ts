@@ -20,7 +20,7 @@ export const useEntryForm = (id: string) => {
 
     const [osNumber, setOsNumber] = useState('');
     const [serialNumber, setSerialNumber] = useState('');
-    const [productModel, setProductModel] = useState('');
+    const [equipmentName, setEquipmentName] = useState('');
     const [formId, setFormId] = useState('');
     const [isSaving, setIsSaving] = useState(false);
     const [products, setProducts] = useState<any[]>([]);
@@ -30,7 +30,7 @@ export const useEntryForm = (id: string) => {
         if (session) {
             setOsNumber(session.osNumber || '');
             setSerialNumber(session.serialNumber || '');
-            setProductModel(session.productModel || '');
+            setEquipmentName(session.formName || '');
             setFormId((session as any).formId || '');
         }
     }, [session]);
@@ -47,13 +47,13 @@ export const useEntryForm = (id: string) => {
 
     const handleSelectProduct = (selectedFormId: string, selectedFormName: string) => {
         setFormId(selectedFormId);
-        setProductModel(selectedFormName);
+        setEquipmentName(selectedFormName);
     };
 
     const handleSaveAndNavigate = async () => {
         if (!session) return;
 
-        if (!productModel || !formId) {
+        if (!equipmentName || !formId) {
             Alert.alert('Atenção', 'Selecione um equipamento para continuar.');
             return;
         }
@@ -62,14 +62,13 @@ export const useEntryForm = (id: string) => {
         await updateSession(session.id, {
             osNumber,
             serialNumber,
-            productModel,
-            name: `OS ${osNumber} - ${session.clientName || 'Cliente'}`,
+            formName: equipmentName,
             ...({ formId } as any) // Storing formId in session
         });
         setIsSaving(false);
 
         // All new checklists will go through the DynamicForm interpreter
-        navigation.navigate('DynamicForm', { id, formId });
+        navigation.navigate('StepsMenu', { id, formId });
     };
 
     return {
@@ -78,7 +77,7 @@ export const useEntryForm = (id: string) => {
         setOsNumber,
         serialNumber,
         setSerialNumber,
-        productModel,
+        equipmentName,
         formId,
         products,
         isLoadingProducts,

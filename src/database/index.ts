@@ -16,11 +16,9 @@ export const initDatabase = async () => {
   await db.execAsync(`
     CREATE TABLE IF NOT EXISTS sessions (
       id TEXT PRIMARY KEY NOT NULL,
-      name TEXT,
-      clientName TEXT,
+      formName TEXT,
       osNumber TEXT,
       serialNumber TEXT,
-      productModel TEXT,
       formId TEXT,
       status TEXT,
       startDate TEXT,

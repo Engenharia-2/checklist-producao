@@ -2,13 +2,11 @@ export type SessionStatus = 'aberta' | 'finalizada';
 
 export interface Session {
     id: string;
-    name: string;
-    clientName: string;
+    formName: string;
     osNumber: string;
     startDate: string; // ISO string
     endDate?: string; // ISO string
     serialNumber?: string;
-    productModel?: string;
     formId?: string;
     status: SessionStatus;
     items: any[]; // To be defined later

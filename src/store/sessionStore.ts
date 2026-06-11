@@ -9,7 +9,7 @@ interface SessionState {
     isLoading: boolean;
 
     initializeStore: () => Promise<void>;
-    createSession: (clientName: string, osNumber: string) => Promise<string>;
+    createSession: (osNumber: string) => Promise<string>;
     deleteSession: (id: string) => Promise<void>;
     getFilteredSessions: (query: string) => Session[];
     updateSession: (id: string, updates: Partial<Session>) => Promise<void>;
@@ -26,7 +26,17 @@ export const useSessionStore = create<SessionState>((set, get) => ({
         try {
             // Busca diretamente da API central agora
             const sessions = await apiService.getSessions();
-            set({ sessions });
+            
+            // Para cada sessão, vamos anexar o formDefinition para facilitar o uso no app
+            const sessionsWithDefinitions = await Promise.all(sessions.map(async (s: any) => {
+                if (s.formId) {
+                    const formDef = await apiService.getFormById(s.formId);
+                    return { ...s, formDefinition: formDef };
+                }
+                return s;
+            }));
+
+            set({ sessions: sessionsWithDefinitions });
         } catch (error) {
             console.error('Failed to init store:', error);
         } finally {
@@ -34,7 +44,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
         }
     },
 
-    createSession: async (clientName: string, osNumber: string) => {
+    createSession: async (osNumber: string) => {
         set({ isCreating: true });
 
         try {
@@ -45,9 +55,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
 
             // Atualiza a sessão com os metadados iniciais
             const updates = {
-                clientName,
                 osNumber,
-                name: `OS ${osNumber} - ${clientName}`
             };
             
             await apiService.updateSession(newSessionApi.id, updates);
@@ -94,9 +102,8 @@ export const useSessionStore = create<SessionState>((set, get) => ({
 
         const lowerQuery = query.toLowerCase();
         return sessions.filter((s) =>
-            (s.name && s.name.toLowerCase().includes(lowerQuery)) ||
-            (s.osNumber && s.osNumber.toLowerCase().includes(lowerQuery)) ||
-            (s.clientName && s.clientName.toLowerCase().includes(lowerQuery))
+            (s.formName && s.formName.toLowerCase().includes(lowerQuery)) ||
+            (s.osNumber && s.osNumber.toLowerCase().includes(lowerQuery))
         );
     },
 

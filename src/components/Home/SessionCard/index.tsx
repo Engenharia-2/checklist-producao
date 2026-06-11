@@ -8,7 +8,6 @@ interface SessionCardProps {
     onPress: (id: string) => void;
     onDelete: (id: string) => void;
 }
-
 export const SessionCard: React.FC<SessionCardProps> = ({ session, onPress, onDelete }) => {
     const formattedDate = new Date(session.startDate).toLocaleString('pt-BR');
 
@@ -26,4 +25,5 @@ export const SessionCard: React.FC<SessionCardProps> = ({ session, onPress, onDe
             </TouchableOpacity>
         </TouchableOpacity>
     );
+   
 };

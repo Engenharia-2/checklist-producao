@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { apiService } from '../services/apiService';
 import { useSessionStore } from '../store/sessionStore';
 
-export const useDynamicForm = (sessionId: string, formId: string) => {
+export const useDynamicForm = (sessionId: string, formId: string, stepId?: string) => {
     const { sessions, updateChecklistItem } = useSessionStore();
     const session = sessions.find(s => s.id === sessionId);
     const answers = (session as any)?.answers || {};
@@ -25,8 +25,22 @@ export const useDynamicForm = (sessionId: string, formId: string) => {
         updateChecklistItem(sessionId, { [fieldId]: value });
     };
 
+    // Filtra os campos se uma etapa específica for fornecida
+    let activeFields = [];
+    let stepTitle = '';
+    
+    if (schema?.steps && stepId) {
+        const currentStep = schema.steps.find((s: any) => s.id === stepId);
+        activeFields = currentStep?.fields || [];
+        stepTitle = currentStep?.title || '';
+    } else {
+        activeFields = schema?.fields || [];
+    }
+
     return {
         schema,
+        activeFields,
+        stepTitle,
         isLoading,
         answers,
         session,
