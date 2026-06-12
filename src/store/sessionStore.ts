@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import { create } from 'zustand';
 import { apiService } from '../services/apiService';
 import { Session } from '../types/session';
@@ -75,9 +74,24 @@ export const useSessionStore = create<SessionState>((set, get) => ({
         try {
             await apiService.updateSession(id, updates);
 
+            // Se o formId foi atualizado, precisamos buscar a definição do formulário
+            // para que as etapas (steps) fiquem disponíveis imediatamente na navegação
+            let formDefinition = null;
+            const updatedFormId = (updates as any).formId;
+
+            if (updatedFormId) {
+                formDefinition = await apiService.getFormById(updatedFormId);
+            }
+
             set((state) => ({
                 sessions: state.sessions.map((s) =>
-                    s.id === id ? { ...s, ...updates } : s
+                    s.id === id 
+                        ? { 
+                            ...s, 
+                            ...updates, 
+                            ...(formDefinition ? { formDefinition } : {}) 
+                          } 
+                        : s
                 ),
             }));
         } catch (error) {

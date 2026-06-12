@@ -1,7 +1,6 @@
 // Checklist-Producao/src/services/apiService.ts
 
-// Usando o IP da máquina local para que o emulador Android consiga acessar a API.
-const BASE_URL = 'http://192.168.0.176:3005';
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export const apiService = {
     getFormDefinitions: async () => {
@@ -18,6 +17,9 @@ export const apiService = {
     getFormById: async (id: string) => {
         try {
             const response = await fetch(`${BASE_URL}/forms/${id}`);
+            // Se o formulário não existir (foi deletado), retornamos null silenciosamente
+            if (response.status === 404) return null;
+            
             if (!response.ok) throw new Error('Falha ao buscar detalhes do formulário');
             return await response.json();
         } catch (error) {

@@ -42,44 +42,47 @@ export default function StepsMenuScreen() {
     };
 
     return (
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-            <Text style={styles.title}>Etapas da Inspeção</Text>
-            <Text style={styles.subtitle}>{session?.formName}</Text>
+        <View style={styles.container}>
+            <ScrollView 
+                contentContainerStyle={styles.contentContainer}
+                showsVerticalScrollIndicator={false}
+            >
+                <Text style={styles.subtitle}>{session?.formName}</Text>
 
-            <View style={styles.stepsList}>
-                {steps.map((step: any, index: number) => {
-                    const complete = isStepComplete(step);
-                    return (
-                        <TouchableOpacity 
-                            key={step.id} 
-                            style={styles.stepCard}
-                            onPress={() => navigation.navigate('DynamicForm', { 
-                                id: sessionId, 
-                                formId: (session as any).formId,
-                                stepId: step.id 
-                            })}
-                        >
-                            <View style={styles.stepInfo}>
-                                <Text style={styles.stepNumber}>{index + 1}</Text>
+                <View style={styles.stepsList}>
+                    {steps.map((step: any) => {
+                        const complete = isStepComplete(step);
+                        return (
+                            <TouchableOpacity 
+                                key={step.id} 
+                                style={styles.stepCard}
+                                onPress={() => navigation.navigate('DynamicForm', { 
+                                    id: sessionId, 
+                                    formId: (session as any).formId,
+                                    stepId: step.id 
+                                })}
+                            >
+                                {complete && (
+                                    <Ionicons name="checkmark-circle" size={24} color="#21ce49" style={styles.checkIcon} />
+                                )}
+                                
                                 <Text style={styles.stepTitle}>{step.title}</Text>
-                            </View>
-                            {complete && (
-                                <Ionicons name="checkmark-circle" size={28} color="#21ce49" />
-                            )}
-                            <Ionicons name="chevron-forward" size={20} color="#ccc" />
-                        </TouchableOpacity>
-                    );
-                })}
-            </View>
+                                
+                                <Ionicons name="chevron-forward" size={20} color="#ccc" style={styles.chevronIcon} />
+                            </TouchableOpacity>
+                        );
+                    })}
+                </View>
 
-            <View style={styles.footer}>
-                <CustomButton 
-                    title="Voltar para Home" 
-                    onPress={() => navigation.navigate('Home')}
-                    variant="secondary"
-                />
-            </View>
-        </ScrollView>
+                <View style={styles.footer}>
+                    <CustomButton 
+                        title="Voltar para Home" 
+                        onPress={() => navigation.navigate('Home')}
+                        variant="secondary"
+                    />
+                </View>
+            </ScrollView>
+        </View>
     );
 }
 
@@ -90,52 +93,56 @@ const styles = StyleSheet.create({
     },
     contentContainer: {
         padding: 20,
+        paddingBottom: 40,
+        flexGrow: 1,
     },
     title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#333',
+        display: 'none', // Removido conforme solicitado
     },
     subtitle: {
-        fontSize: 16,
-        color: '#666',
-        marginBottom: 20,
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#333',
+        textAlign: 'center',
+        paddingTop: 30,
+        marginBottom: 30,
     },
     stepsList: {
-        marginTop: 10,
+        flex: 1,
     },
     stepCard: {
         backgroundColor: '#fff',
         borderRadius: 12,
-        padding: 18,
-        flexDirection: 'row',
+        padding: 24,
         alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: 12,
+        justifyContent: 'center',
+        marginBottom: 16,
+        flex: 1,
+        minHeight: 100,
         elevation: 2,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.1,
         shadowRadius: 2,
-    },
-    stepInfo: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        flex: 1,
-    },
-    stepNumber: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#1890ff',
-        marginRight: 15,
-        width: 25,
+        position: 'relative',
     },
     stepTitle: {
-        fontSize: 18,
-        color: '#444',
-        fontWeight: '500',
+        fontSize: 20,
+        color: '#333',
+        fontWeight: '600',
+        textAlign: 'center',
+        paddingHorizontal: 30,
+    },
+    checkIcon: {
+        position: 'absolute',
+        left: 20,
+    },
+    chevronIcon: {
+        position: 'absolute',
+        right: 20,
     },
     footer: {
-        marginTop: 30,
+        marginTop: 'auto',
+        paddingTop: 20,
     }
 });
