@@ -7,10 +7,12 @@ interface ButtonProps {
     onPress: () => void;
     isLoading?: boolean;
     disabled?: boolean;
+    variant?: 'primary' | 'secondary';
 }
 
-const ButtonContainer = styled.TouchableOpacity<{ disabled?: boolean }>`
-  background-color: ${({ theme }) => theme.colors.primary};
+const ButtonContainer = styled.TouchableOpacity<{ disabled?: boolean; variant?: string }>`
+  background-color: ${({ theme, variant }) => 
+    variant === 'secondary' ? theme.colors.secondary : theme.colors.primary};
   padding: ${({ theme }) => theme.spacing.md};
   border-radius: ${({ theme }) => theme.borderRadius.md};
   align-items: center;
@@ -25,9 +27,9 @@ const ButtonText = styled.Text`
   font-weight: bold;
 `;
 
-export const CustomButton: React.FC<ButtonProps> = ({ title, onPress, isLoading, disabled }) => {
+export const CustomButton: React.FC<ButtonProps> = ({ title, onPress, isLoading, disabled, variant }) => {
     return (
-        <ButtonContainer onPress={onPress} disabled={disabled || isLoading}>
+        <ButtonContainer onPress={onPress} disabled={disabled || isLoading} variant={variant}>
             {isLoading ? (
                 <ActivityIndicator color="#fff" />
             ) : (

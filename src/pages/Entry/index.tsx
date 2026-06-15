@@ -67,7 +67,8 @@ export default function EntryScreen() {
                         style={styles.input}
                         value={serialNumber}
                         onChangeText={setSerialNumber}
-                        placeholder="Ex: SN-9999"
+                        placeholder="Ex: 9999"
+                        keyboardType="numeric"
                     />
                 </View>
 
