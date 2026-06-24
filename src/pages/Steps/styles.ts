@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
         display: 'none',
     },
     subtitle: {
-        fontSize: 20,
+        fontSize: 28,
         fontWeight: 'bold',
         color: '#333',
         textAlign: 'center',
@@ -32,7 +32,7 @@ export const styles = StyleSheet.create({
         justifyContent: 'center',
         marginBottom: 16,
         flex: 1,
-        minHeight: 100,
+        minHeight: 50,
         elevation: 2,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
@@ -51,9 +51,42 @@ export const styles = StyleSheet.create({
         position: 'absolute',
         left: 20,
     },
+    statusIcon: {
+        position: 'absolute',
+        left: 20,
+    },
     chevronIcon: {
         position: 'absolute',
         right: 20,
+    },
+    progressContainer: {
+        backgroundColor: '#fff',
+        borderRadius: 12,
+        padding: 16,
+        marginBottom: 20,
+        elevation: 1,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 2,
+    },
+    progressText: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: '#666',
+        marginBottom: 8,
+        textAlign: 'center',
+    },
+    progressBarBackground: {
+        height: 8,
+        backgroundColor: '#eee',
+        borderRadius: 4,
+        overflow: 'hidden',
+    },
+    progressBarFill: {
+        height: '100%',
+        backgroundColor: '#076DF2', // theme.colors.primary
+        borderRadius: 4,
     },
     footer: {
         marginTop: 'auto',

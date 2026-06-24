@@ -1,6 +1,6 @@
 import React from 'react';
 import { ActivityIndicator } from 'react-native';
-import styled from 'styled-components/native';
+import { ButtonContainer, ButtonText } from './styles';
 
 interface ButtonProps {
     title: string;
@@ -9,23 +9,6 @@ interface ButtonProps {
     disabled?: boolean;
     variant?: 'primary' | 'secondary';
 }
-
-const ButtonContainer = styled.TouchableOpacity<{ disabled?: boolean; variant?: string }>`
-  background-color: ${({ theme, variant }) => 
-    variant === 'secondary' ? theme.colors.secondary : theme.colors.primary};
-  padding: ${({ theme }) => theme.spacing.md};
-  border-radius: ${({ theme }) => theme.borderRadius.md};
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
-`;
-
-const ButtonText = styled.Text`
-  color: ${({ theme }) => theme.colors.surface};
-  font-size: ${({ theme }) => theme.typography.sizes.md};
-  font-weight: bold;
-`;
 
 export const CustomButton: React.FC<ButtonProps> = ({ title, onPress, isLoading, disabled, variant }) => {
     return (
@@ -38,3 +21,4 @@ export const CustomButton: React.FC<ButtonProps> = ({ title, onPress, isLoading,
         </ButtonContainer>
     );
 };
+

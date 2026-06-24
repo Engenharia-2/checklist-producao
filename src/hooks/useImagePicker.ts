@@ -1,23 +1,32 @@
-import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
+import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { useCallback } from 'react';
 import { Alert } from 'react-native';
 
-export const useImagePicker = (onImageProcessed: (uri: string) => void) => {
-    const processImage = useCallback(async (uri: string) => {
+export const useImagePicker = (onImagesProcessed: (uris: string[]) => void) => {
+    const processImages = useCallback(async (uris: string[]) => {
         try {
-            const result = await manipulateAsync(
-                uri,
-                [{ resize: { width: 1200 } }],
-                { compress: 0.7, format: SaveFormat.JPEG }
+            const results = await Promise.all(
+                uris.map(async (uri) => {
+                    const manipContext = ImageManipulator.manipulate(uri);
+                    manipContext.resize({ width: 1200 });
+                    
+                    const renderResult = await manipContext.renderAsync();
+                    const savedResult = await renderResult.saveAsync({ 
+                        compress: 0.7, 
+                        format: SaveFormat.JPEG 
+                    });
+                    
+                    return savedResult.uri;
+                })
             );
 
-            onImageProcessed(result.uri);
+            onImagesProcessed(results);
         } catch (error) {
-            console.error('Error processing image:', error);
-            Alert.alert('Erro', 'Não foi possível processar a imagem.');
+            console.error('Error processing images:', error);
+            Alert.alert('Erro', 'Não foi possível processar as imagens.');
         }
-    }, [onImageProcessed]);
+    }, [onImagesProcessed]);
 
     const pickImage = useCallback(async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -28,14 +37,16 @@ export const useImagePicker = (onImageProcessed: (uri: string) => void) => {
 
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ['images'],
+            allowsMultipleSelection: true,
             allowsEditing: false,
             quality: 1,
         });
 
-        if (!result.canceled && result.assets[0]) {
-            processImage(result.assets[0].uri);
+        if (!result.canceled && result.assets && result.assets.length > 0) {
+            const uris = result.assets.map(asset => asset.uri);
+            processImages(uris);
         }
-    }, [processImage]);
+    }, [processImages]);
 
-    return { pickImage, processImage };
+    return { pickImage, processImages };
 };

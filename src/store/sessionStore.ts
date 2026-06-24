@@ -8,7 +8,7 @@ interface SessionState {
     isLoading: boolean;
 
     initializeStore: () => Promise<void>;
-    createSession: (osNumber: string) => Promise<string>;
+    createSession: (data: { osNumber: string; serialNumber: string; formName: string; formId: string }) => Promise<string>;
     deleteSession: (id: string) => Promise<void>;
     getFilteredSessions: (query: string) => Session[];
     updateSession: (id: string, updates: Partial<Session>) => Promise<void>;
@@ -27,12 +27,17 @@ export const useSessionStore = create<SessionState>((set, get) => ({
             const sessions = await apiService.getSessions();
             
             // Para cada sessão, vamos anexar o formDefinition para facilitar o uso no app
+            // E garantir que a propriedade startDate esteja mapeada a partir de createdAt
             const sessionsWithDefinitions = await Promise.all(sessions.map(async (s: any) => {
-                if (s.formId) {
-                    const formDef = await apiService.getFormById(s.formId);
-                    return { ...s, formDefinition: formDef };
+                const mappedSession = {
+                    ...s,
+                    startDate: s.createdAt || s.startDate || new Date().toISOString()
+                };
+                if (mappedSession.formId) {
+                    const formDef = await apiService.getFormById(mappedSession.formId);
+                    return { ...mappedSession, formDefinition: formDef };
                 }
-                return s;
+                return mappedSession;
             }));
 
             set({ sessions: sessionsWithDefinitions });
@@ -43,21 +48,14 @@ export const useSessionStore = create<SessionState>((set, get) => ({
         }
     },
 
-    createSession: async (osNumber: string) => {
+    createSession: async (data: { osNumber: string; serialNumber: string; formName: string; formId: string }) => {
         set({ isCreating: true });
 
         try {
-            // Cria a sessão na API Central
-            const newSessionApi = await apiService.createSession();
+            // Cria a sessão na API Central com os metadados iniciais
+            const newSessionApi = await apiService.createSession(data);
             
             if (!newSessionApi) throw new Error("Falha ao criar na API");
-
-            // Atualiza a sessão com os metadados iniciais
-            const updates = {
-                osNumber,
-            };
-            
-            await apiService.updateSession(newSessionApi.id, updates);
             
             // Recarrega a lista do servidor
             await get().initializeStore();

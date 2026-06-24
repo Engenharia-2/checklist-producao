@@ -6,7 +6,6 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemeProvider } from 'styled-components/native';
 import DynamicFormScreen from './pages/Checklist';
 import StepsMenuScreen from './pages/Steps';
-import EntryScreen from './pages/Entry';
 import HomeScreen from './pages/Home';
 
 const Stack = createStackNavigator();
@@ -23,7 +22,6 @@ export default function App() {
                     }}
                 >
                     <Stack.Screen name="Home" component={HomeScreen} />
-                    <Stack.Screen name="Entry" component={EntryScreen} />
                     <Stack.Screen name="StepsMenu" component={StepsMenuScreen} />
                     <Stack.Screen name="DynamicForm" component={DynamicFormScreen} />
                 </Stack.Navigator>

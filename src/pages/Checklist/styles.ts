@@ -35,7 +35,7 @@ export const styles = StyleSheet.create({
         marginBottom: 20,
     },
     label: {
-        fontSize: 16,
+        fontSize: 20,
         fontWeight: 'bold',
         color: '#555',
         marginBottom: 8,

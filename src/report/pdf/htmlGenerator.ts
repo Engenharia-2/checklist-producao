@@ -205,8 +205,8 @@ export const createPdfContent = (
           ${generateField("Ordem de Produção (OP)", session.osNumber)}
           ${generateField("Número de Série", session.serialNumber)}
           ${generateField("Modelo do Produto", session.formName)}
-          ${generateField("Data de Início", new Date(session.startDate).toLocaleString("pt-BR"))}
-          ${session.endDate ? generateField("Data de Fim", new Date(session.endDate).toLocaleString("pt-BR")) : ""}
+          ${generateField("Data de Início", new Date(session.startDate || (session as any).createdAt || new Date()).toLocaleString("pt-BR"))}
+          ${(session.endDate || (session as any).updatedAt) ? generateField("Data de Fim / Atualização", new Date(session.endDate || (session as any).updatedAt).toLocaleString("pt-BR")) : ""}
         </div>
 
         ${dynamicChecklistHtml}

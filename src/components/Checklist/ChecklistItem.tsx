@@ -1,5 +1,5 @@
 import React from 'react';
-import { CustomCheckbox } from '../ui/Checkbox/CustomCheckbox';
+import { CustomCheckbox } from '../ui/Checkbox';
 
 interface ChecklistItemProps {
     id: string; // Add ID to track specific items

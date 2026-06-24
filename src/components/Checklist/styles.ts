@@ -9,5 +9,5 @@ export const styles = StyleSheet.create({
         flex: 1,
         padding: 16,
         paddingBottom: 32,
-    }
+    },
 })

@@ -2,20 +2,20 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
-import { Alert, View, Image } from 'react-native';
+import { Alert, View, Image, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SessionList } from '@/src/components/Home/SessionList';
 import { CustomButton } from '@/src/components/ui/Button';
 import { SearchInput } from '@/src/components/ui/Input/SearchInput';
 import { useSessionStore } from '@/src/store/sessionStore';
+import { InspectionCreateModal } from '@/src/components/Home/InspectionCreateModal';
 
 import { styles } from './styles';
 
-// Define the params for our stack
 type RootStackParamList = {
     Home: undefined;
-    Entry: { id: string };
+    StepsMenu: { id: string; formId: string };
 };
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
@@ -24,10 +24,10 @@ export default function HomeScreen() {
     const navigation = useNavigation<HomeScreenNavigationProp>();
     const insets = useSafeAreaInsets();
     const [searchQuery, setSearchQuery] = useState('');
+    const [modalVisible, setModalVisible] = useState(false);
 
     const {
         sessions,
-        isCreating,
         createSession,
         deleteSession,
         initializeStore
@@ -42,10 +42,14 @@ export default function HomeScreen() {
         (s.osNumber && s.osNumber.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
-    const handleCreateSession = async () => {
-        const newId = await createSession('');
+    const handleCreateSession = () => {
+        setModalVisible(true);
+    };
+
+    const handleConfirmCreate = async (data: { osNumber: string; serialNumber: string; formName: string; formId: string }) => {
+        const newId = await createSession(data);
         if (newId) {
-            navigation.navigate('Entry', { id: newId });
+            navigation.navigate('StepsMenu', { id: newId, formId: data.formId });
         }
     };
 
@@ -69,20 +73,25 @@ export default function HomeScreen() {
     };
 
     const handleSelectSession = (id: string) => {
-        navigation.navigate('Entry', { id });
+        const session = sessions.find(s => s.id === id);
+        if (session) {
+            navigation.navigate('StepsMenu', { id, formId: session.formId || '' });
+        }
     };
 
     return (
         <View style={[styles.container, { paddingTop: insets.top }]}>
             <StatusBar style="dark" />
 
-            <Image style={styles.logoImage} source={require('@/assets/images/logoCianoEscritaLHF.png')} />
+            <View style={styles.logoContainer}>
+                <Image style={styles.logoImage} source={require('@/assets/images/check-mobile.png')} />
+                <Text style={styles.logoText}>CP-LHF</Text>
+            </View>
 
             <View style={styles.buttonWrapper}>
                 <CustomButton
-                    title={isCreating ? "Criando..." : "Iniciar Nova OP"}
+                    title="Iniciar Nova OP"
                     onPress={handleCreateSession}
-                    isLoading={isCreating}
                 />
             </View>
 
@@ -96,6 +105,12 @@ export default function HomeScreen() {
                 sessions={filteredSessions}
                 onSelectSession={handleSelectSession}
                 onDeleteSession={handleDeleteSession}
+            />
+
+            <InspectionCreateModal
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)}
+                onSubmit={handleConfirmCreate}
             />
         </View>
     );

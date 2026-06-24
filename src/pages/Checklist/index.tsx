@@ -50,7 +50,6 @@ export default function DynamicFormScreen() {
 
     return (
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-            {stepTitle ? <Text style={styles.headerTitle}>{stepTitle}</Text> : null}
 
             {activeFields.map((field: any) => (
                 <ComponentFactory

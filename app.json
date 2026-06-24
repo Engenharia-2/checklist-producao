@@ -4,7 +4,7 @@
     "slug": "Checklist-Producao",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/logoCianoLHF.png",
+    "icon": "./assets/images/check-mobile.png",
     "scheme": "checklistproducao",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -14,9 +14,9 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/logoCianoLHF.png",
-        "backgroundImage": "./assets/images/logoCianoLHF.png",
-        "monochromeImage": "./assets/images/logoCianoLHF.png"
+        "foregroundImage": "./assets/images/check-mobile.png",
+        "backgroundImage": "./assets/images/check-mobile.png",
+        "monochromeImage": "./assets/images/check-mobile.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
@@ -24,14 +24,14 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/logoCianoLHF.png"
+      "favicon": "./assets/images/check-mobile.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/logoCianoLHF.png",
+          "image": "./assets/images/check-mobile.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",

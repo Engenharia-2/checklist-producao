@@ -40,9 +40,13 @@ export const apiService = {
         }
     },
 
-    createSession: async () => {
+    createSession: async (initialData?: { osNumber?: string; serialNumber?: string; formName?: string; formId?: string }) => {
         try {
-            const response = await fetch(`${BASE_URL}/sessions`, { method: 'POST' });
+            const response = await fetch(`${BASE_URL}/sessions`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: initialData ? JSON.stringify(initialData) : undefined,
+            });
             if (!response.ok) throw new Error('Falha ao criar sessão');
             return await response.json();
         } catch (error) {
@@ -99,11 +103,19 @@ export const apiService = {
                 },
             });
 
-            if (!response.ok) throw new Error('Falha no upload da imagem');
+            if (!response.ok) {
+                let errorBody = '';
+                try {
+                    errorBody = await response.text();
+                } catch (e) {
+                    errorBody = '(Não foi possível ler o corpo da resposta de erro)';
+                }
+                throw new Error(`Falha no upload da imagem. Status: ${response.status}. Detalhes: ${errorBody}`);
+            }
+
             const data = await response.json();
             return `${BASE_URL}${data.url}`;
-        } catch (error) {
-            console.error('[apiService] Error uploading image:', error);
+        } catch (error: any) {
             return null;
         }
     }

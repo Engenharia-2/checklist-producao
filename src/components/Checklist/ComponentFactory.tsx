@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { CustomInput } from '../../components/ui/Input/CustomInput';
-import { CustomDropdown } from '../../components/ui/Select/CustomDropdown';
-import { CustomCheckbox } from '../../components/ui/Checkbox/CustomCheckbox';
+import { CustomDropdown } from '../../components/ui/Dropdown';
+import { CustomCheckbox } from '../../components/ui/Checkbox';
 import ImageAttachment from '../../components/Image/ImageAttachment';
 import { useImageManager } from '../../hooks/useImageManager';
 import { CameraModal } from '../../components/Camera';
@@ -10,16 +10,14 @@ import { styles } from '../../pages/Checklist/styles';
 
 const DynamicImageField = ({ field, sessionId }: { field: any, sessionId: string }) => {
     const {
-        images,
+        attachedImages,
         isCameraVisible,
         pickImage,
         handleDeleteImage,
         handleTakePicture,
         closeCamera,
-        processImage
+        processImages
     } = useImageManager(sessionId, field.id);
-
-    const attachedImages = images.map(uri => ({ uri }));
 
     return (
         <View key={field.id} style={styles.fieldContainer}>
@@ -33,7 +31,7 @@ const DynamicImageField = ({ field, sessionId }: { field: any, sessionId: string
             <CameraModal
                 isVisible={isCameraVisible}
                 onClose={closeCamera}
-                onPictureTaken={(photo) => processImage(photo.uri)}
+                onPictureTaken={(photo) => processImages([photo.uri])}
             />
         </View>
     );
