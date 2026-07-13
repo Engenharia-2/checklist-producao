@@ -71,9 +71,13 @@ export const useImageManager = (sessionId: string, imageKey: string) => {
     const { pickImage, processImages } = useImagePicker(handleImagesOutput);
 
     const handleDeleteImage = (uriToDelete: string) => {
+        // Remove da fila de upload local e do estado atual
         setUploadingQueue(prev => prev.filter(item => item.uri !== uriToDelete));
         const newImages = images.filter(uri => uri !== uriToDelete);
         updateChecklistItem(sessionId, { [imageKey]: newImages });
+
+        // Dispara a exclusão física do servidor em background de forma assíncrona
+        apiService.deleteImage(uriToDelete).catch(err => console.error("Falha silenciosa ao excluir imagem", err));
     };
 
     const handleTakePicture = async () => {

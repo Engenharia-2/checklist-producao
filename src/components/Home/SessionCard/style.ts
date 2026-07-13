@@ -25,6 +25,12 @@ export const styles = StyleSheet.create({
         color: '#666',
         marginTop: 4,
     },
+    lastStepText: {
+        fontSize: 12,
+        color: '#666',
+        marginTop: 4,
+        fontStyle: 'italic',
+    },
     deleteButton: {
         backgroundColor: '#ff4d4d',
         borderRadius: 20,

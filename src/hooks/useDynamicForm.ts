@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { apiService } from '../services/apiService';
 import { useSessionStore } from '../store/sessionStore';
 
@@ -21,9 +21,9 @@ export const useDynamicForm = (sessionId: string, formId: string, stepId?: strin
         fetchSchema();
     }, [formId]);
 
-    const handleFieldChange = (fieldId: string, value: any) => {
+    const handleFieldChange = useCallback((fieldId: string, value: any) => {
         updateChecklistItem(sessionId, { [fieldId]: value });
-    };
+    }, [sessionId, updateChecklistItem]);
 
     // Filtra os campos se uma etapa específica for fornecida
     let activeFields = [];

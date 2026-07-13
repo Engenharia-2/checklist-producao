@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Alert, FlatList, Image, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import { Alert, FlatList, Image, Text, TouchableOpacity, View, ActivityIndicator, useWindowDimensions } from 'react-native';
 import { styles } from './style';
 import { colors } from '../../../../theme/colors';
 import { AttachedImage } from '../../../report/types';
@@ -10,9 +10,12 @@ type ImageAttachmentProps = {
   onPickImage: () => void;
   onTakePicture: () => void;
   onDeleteImage: (image: AttachedImage) => void;
+  editable?: boolean;
 };
 
-const ImageAttachment: FC<ImageAttachmentProps> = ({ attachedImages, onPickImage, onTakePicture, onDeleteImage }) => {
+const ImageAttachment: FC<ImageAttachmentProps> = ({ attachedImages, onPickImage, onTakePicture, onDeleteImage, editable = true }) => {
+  const { width } = useWindowDimensions();
+  const numColumns = width > 600 ? 3 : 2;
 
   const handleRemoveImage = (image: AttachedImage) => {
     Alert.alert(
@@ -53,38 +56,43 @@ const ImageAttachment: FC<ImageAttachmentProps> = ({ attachedImages, onPickImage
           </View>
         )}
 
-        <TouchableOpacity 
-          onPress={() => handleRemoveImage(item)} 
-          style={styles.removeImageButton}
-          disabled={isDeleting || isUploading}
-        >
-          <Text style={[styles.buttonText, styles.buttonTextRemove]}>X</Text>
-        </TouchableOpacity>
+        {editable && (
+          <TouchableOpacity 
+            onPress={() => handleRemoveImage(item)} 
+            style={styles.removeImageButton}
+            disabled={isDeleting || isUploading}
+          >
+            <Text style={[styles.buttonText, styles.buttonTextRemove]}>X</Text>
+          </TouchableOpacity>
+        )}
       </View>
     );
   };
 
   return (
     <>
-      <View style={styles.imgButtonsContainer}>
-        <TouchableOpacity onPress={onPickImage} style={[styles.button, styles.buttonImg]}>
-          <Text style={styles.buttonText}>Imagem</Text>
-          <MaterialIcons name="photo-library" size={40} color={colors.textSecondary} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onTakePicture} style={[styles.button, styles.buttonImg]}>
-          <Text style={styles.buttonText}>Foto</Text>
-          <MaterialIcons name="camera-alt" size={40} color={colors.textSecondary}/>
-        </TouchableOpacity>
-      </View>
+      {editable && (
+        <View style={styles.imgButtonsContainer}>
+          <TouchableOpacity onPress={onPickImage} style={[styles.button, styles.buttonImg]}>
+            <Text style={styles.buttonText}>Imagem</Text>
+            <MaterialIcons name="photo-library" size={40} color={colors.textSecondary} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={onTakePicture} style={[styles.button, styles.buttonImg]}>
+            <Text style={styles.buttonText}>Foto</Text>
+            <MaterialIcons name="camera-alt" size={40} color={colors.textSecondary}/>
+          </TouchableOpacity>
+        </View>
+      )}
       {attachedImages.length > 0 ? (
         <View style={styles.imagePreviewContainer}>
           <Text style={styles.labelText}>Imagens Anexadas:</Text>
           <FlatList
+            key={`grid-${numColumns}`}
             data={attachedImages}
             renderItem={renderImageItem}
             keyExtractor={(item) => `${item.id || item.uri}`}
             horizontal={false} 
-            numColumns={2} 
+            numColumns={numColumns} 
             scrollEnabled={false} // FlatList nested in ScrollView
             contentContainerStyle={styles.flatListContent}
           />

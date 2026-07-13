@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { apiService } from '../services/apiService';
-import { Session } from '../types/session';
+import { Session, SessionStatus } from '../types/session';
+import { calculateIsSessionComplete } from '../utils/sessionUtils';
 
 interface SessionState {
     sessions: Session[];
@@ -128,13 +129,17 @@ export const useSessionStore = create<SessionState>((set, get) => ({
         const currentAnswers = (session as any).answers || {};
         const newAnswers = { ...currentAnswers, ...items };
 
+        // Calcula dinamicamente o status da OP
+        const isComplete = calculateIsSessionComplete(session as Session, newAnswers);
+        const newStatus: SessionStatus = isComplete ? 'finalizada' : 'aberta';
+
         // Optimistic update
         const updatedSessions = sessions.map(s =>
-            s.id === sessionId ? { ...s, answers: newAnswers } : s
+            s.id === sessionId ? { ...s, answers: newAnswers, status: newStatus } : s
         );
         set({ sessions: updatedSessions });
 
         // Persist na API Central
-        await apiService.updateSession(sessionId, { answers: newAnswers });
+        await apiService.updateSession(sessionId, { answers: newAnswers, status: newStatus });
     },
 }));

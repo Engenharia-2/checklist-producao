@@ -62,5 +62,29 @@ export const styles = StyleSheet.create({
         color: '#ff4d4f',
         textAlign: 'center',
         marginBottom: 20,
-    }
+    },
+    lockedBanner: {
+        backgroundColor: '#ffe260',
+        borderColor: '#ffe58f',
+        borderWidth: 1,
+        borderRadius: 8,
+        padding: 20,
+        marginBottom: 10,
+        marginTop: 20,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    lockedText: {
+        color: '#d46b08',
+        fontSize: 14,
+        fontWeight: 'bold',
+        flex: 1,
+        marginRight: 8,
+    },
+    unlockLink: {
+        color: '#1890ff',
+        fontSize: 14,
+        fontWeight: 'bold',
+    },
 });

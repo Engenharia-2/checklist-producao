@@ -69,6 +69,18 @@ export const useInspectionForm = ({
         }
     };
 
+    const handleQrScanSuccess = (rawData: string, onError?: (msg: string) => void) => {
+        const parts = rawData.split('-');
+        if (parts.length === 3) {
+            setSerialNumber(rawData);
+            setOsNumber(parts[1]);
+        } else {
+            if (onError) {
+                onError('O QR Code lido não segue o padrão esperado (ex: 260615-3893-00001).');
+            }
+        }
+    };
+
     return {
         osNumber,
         setOsNumber,
@@ -81,5 +93,6 @@ export const useInspectionForm = ({
         isSubmitting,
         handleSelectProduct,
         handleConfirm,
+        handleQrScanSuccess,
     };
 };

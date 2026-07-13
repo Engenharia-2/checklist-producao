@@ -7,8 +7,17 @@ import ImageAttachment from '../../components/Image/ImageAttachment';
 import { useImageManager } from '../../hooks/useImageManager';
 import { CameraModal } from '../../components/Camera';
 import { styles } from '../../pages/Checklist/styles';
+import { CalibrationTableField } from '../../components/ui/Table';
 
-const DynamicImageField = ({ field, sessionId }: { field: any, sessionId: string }) => {
+const DynamicImageField = ({ 
+    field, 
+    sessionId, 
+    editable = true 
+}: { 
+    field: any; 
+    sessionId: string; 
+    editable?: boolean; 
+}) => {
     const {
         attachedImages,
         isCameraVisible,
@@ -27,6 +36,7 @@ const DynamicImageField = ({ field, sessionId }: { field: any, sessionId: string
                 onPickImage={pickImage}
                 onTakePicture={handleTakePicture}
                 onDeleteImage={(img) => handleDeleteImage(img.uri)}
+                editable={editable}
             />
             <CameraModal
                 isVisible={isCameraVisible}
@@ -42,13 +52,15 @@ interface ComponentFactoryProps {
     value: any;
     sessionId: string;
     onFieldChange: (fieldId: string, value: any) => void;
+    editable?: boolean;
 }
 
 export const ComponentFactory: React.FC<ComponentFactoryProps> = ({ 
     field, 
     value, 
     sessionId, 
-    onFieldChange 
+    onFieldChange,
+    editable = true
 }) => {
     switch (field.type) {
         case 'title':
@@ -67,6 +79,7 @@ export const ComponentFactory: React.FC<ComponentFactoryProps> = ({
                         value={value || ''}
                         onChangeText={(text) => onFieldChange(field.id, text)}
                         label={field.label}
+                        editable={editable}
                     />
                 </View>
             );
@@ -87,6 +100,7 @@ export const ComponentFactory: React.FC<ComponentFactoryProps> = ({
                         placeholder={field.placeholder || 'Selecione uma opção'}
                         options={optionsArray} 
                         onSelect={(_, name) => onFieldChange(field.id, name)}
+                        disabled={!editable}
                     />
                 </View>
             );
@@ -99,11 +113,30 @@ export const ComponentFactory: React.FC<ComponentFactoryProps> = ({
                     value={!!value}
                     onValueChange={(newValue) => onFieldChange(field.id, newValue)}
                     explanation={field.explanation}
+                    disabled={!editable}
                 />
             );
 
         case 'image':
-            return <DynamicImageField key={field.id} field={field} sessionId={sessionId} />;
+            return (
+                <DynamicImageField 
+                    key={field.id} 
+                    field={field} 
+                    sessionId={sessionId} 
+                    editable={editable} 
+                />
+            );
+
+        case 'calibration_table':
+            return (
+                <CalibrationTableField 
+                    key={field.id} 
+                    field={field} 
+                    value={value} 
+                    onFieldChange={onFieldChange} 
+                    editable={editable}
+                />
+            );
 
         default:
             return (
@@ -113,3 +146,5 @@ export const ComponentFactory: React.FC<ComponentFactoryProps> = ({
             );
     }
 };
+
+export default ComponentFactory;

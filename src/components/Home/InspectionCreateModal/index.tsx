@@ -1,8 +1,10 @@
-import React from 'react';
-import { Modal, View, Text, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import React, { useState } from 'react';
+import { Modal, View, Text, TextInput, TouchableWithoutFeedback, Keyboard, TouchableOpacity, Alert } from 'react-native';
 import { CustomButton } from '@/src/components/ui/Button';
 import { CustomDropdown } from '@/src/components/ui/Dropdown';
 import { useInspectionForm } from '@/src/hooks/useInspectionForm';
+import { QrScannerModal } from '@/src/components/Camera';
+import { QrCode } from 'lucide-react-native';
 import { styles } from './styles';
 
 interface InspectionCreateModalProps {
@@ -19,9 +21,10 @@ export const InspectionCreateModal: React.FC<InspectionCreateModalProps> = ({
     onClose,
     onSubmit,
     initialData,
-    title = 'Nova OP / Inspeção',
+    title = 'Nova OP',
     submitText = 'Criar e Iniciar'
 }) => {
+    const [isScannerVisible, setIsScannerVisible] = useState(false);
     const {
         osNumber,
         setOsNumber,
@@ -34,6 +37,7 @@ export const InspectionCreateModal: React.FC<InspectionCreateModalProps> = ({
         isSubmitting,
         handleSelectProduct,
         handleConfirm,
+        handleQrScanSuccess,
     } = useInspectionForm({ visible, initialData, onSubmit, onClose });
 
     return (
@@ -45,13 +49,22 @@ export const InspectionCreateModal: React.FC<InspectionCreateModalProps> = ({
 
                         <View style={styles.inputGroup}>
                             <Text style={styles.label}>Número da OP</Text>
-                            <TextInput
-                                style={styles.input}
-                                value={osNumber}
-                                onChangeText={setOsNumber}
-                                placeholder="Ex: 12345"
-                                keyboardType="numeric"
-                            />
+                            <View style={styles.rowContainer}>
+                                <TextInput
+                                    style={[styles.input, styles.inputFlex]}
+                                    value={osNumber}
+                                    onChangeText={setOsNumber}
+                                    placeholder="Ex: 12345"
+                                    keyboardType="numeric"
+                                />
+                                <TouchableOpacity 
+                                    style={styles.qrButton}
+                                    onPress={() => setIsScannerVisible(true)}
+                                    activeOpacity={0.7}
+                                >
+                                    <QrCode size={24} color="#fff" />
+                                </TouchableOpacity>
+                            </View>
                         </View>
 
                         <View style={styles.inputGroup}>
@@ -61,7 +74,7 @@ export const InspectionCreateModal: React.FC<InspectionCreateModalProps> = ({
                                 value={serialNumber}
                                 onChangeText={setSerialNumber}
                                 placeholder="Ex: 9999"
-                                keyboardType="numeric"
+                                keyboardType="phone-pad"
                             />
                         </View>
 
@@ -95,6 +108,11 @@ export const InspectionCreateModal: React.FC<InspectionCreateModalProps> = ({
                     </View>
                 </View>
             </TouchableWithoutFeedback>
+            <QrScannerModal
+                isVisible={isScannerVisible}
+                onClose={() => setIsScannerVisible(false)}
+                onScan={(data) => handleQrScanSuccess(data, (msg) => Alert.alert('Leitura Inválida', msg))}
+            />
         </Modal>
     );
 };

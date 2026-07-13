@@ -55,3 +55,13 @@ export const OptionText = styled.Text`
   font-size: ${({ theme }) => theme.typography.sizes.md};
   color: ${({ theme }) => theme.colors.text};
 `;
+
+export const Loader = styled.ActivityIndicator`
+  margin: 20px;
+`;
+
+export const EmptyText = styled.Text`
+  text-align: center;
+  padding: 20px;
+  color: #999;
+`;

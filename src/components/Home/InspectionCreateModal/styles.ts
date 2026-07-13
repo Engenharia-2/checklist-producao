@@ -55,4 +55,20 @@ export const styles = StyleSheet.create({
   buttonWrapper: {
     flex: 1,
   },
+  rowContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  inputFlex: {
+    flex: 1,
+  },
+  qrButton: {
+    backgroundColor: colors.primary,
+    borderRadius: 8,
+    height: 50,
+    width: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });

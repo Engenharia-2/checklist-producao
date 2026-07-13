@@ -51,6 +51,7 @@
     "react-native-worklets": "0.5.1",
     "styled-components": "^6.1.19",
     "uuid": "^13.0.0",
+    "victory-native": "^36.9.2",
     "zustand": "^5.0.9"
   },
   "devDependencies": {

@@ -1,40 +1,9 @@
 import React, { FC } from 'react';
 import { StyleProp, TextInputProps, TextStyle, ViewStyle } from 'react-native';
-import styled from 'styled-components/native';
-
-// Styled components to match theme
-const Container = styled.View`
-  width: 100%;
-  margin-bottom: 8px;
-`;
-
-const Label = styled.Text`
-  font-size: 16px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 8px;
-`;
-
-const InputContainer = styled.View`
-  flex-direction: row;
-  align-items: center;
-  width: 100%;
-`;
-
-const StyledInput = styled.TextInput`
-  background-color: #ffffff;
-  border-width: 1px;
-  border-color: #ddd;
-  border-radius: 15px;
-  padding: 12px;
-  font-size: 16px;
-  color: #333;
-  elevation: 4;
-  flex: 1;
-`;
+import { CustomContainer, CustomInputWrapper, CustomStyledInput } from './styles';
 
 interface CustomInputProps extends TextInputProps {
-    label: string;
+    label?: string;
     containerStyle?: StyleProp<ViewStyle>;
     labelStyle?: StyleProp<TextStyle>;
     inputStyle?: StyleProp<TextStyle>;
@@ -48,16 +17,16 @@ export const CustomInput: FC<CustomInputProps> = ({
     ...props
 }) => {
     return (
-        <Container style={containerStyle}>
-            {/* <Label style={labelStyle}>{label}</Label> */}
-            <InputContainer>
-                <StyledInput
+        <CustomContainer style={containerStyle}>
+            {/* <CustomLabel style={labelStyle}>{label}</CustomLabel> */}
+            <CustomInputWrapper>
+                <CustomStyledInput
                     placeholderTextColor="#999"
                     style={inputStyle}
                     {...props}
                 />
-            </InputContainer>
-        </Container>
+            </CustomInputWrapper>
+        </CustomContainer>
     );
 };
 

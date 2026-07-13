@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
-import { Alert, View, Image, Text } from 'react-native';
+import { Alert, View, Image, Text, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SessionList } from '@/src/components/Home/SessionList';
@@ -10,6 +10,7 @@ import { CustomButton } from '@/src/components/ui/Button';
 import { SearchInput } from '@/src/components/ui/Input/SearchInput';
 import { useSessionStore } from '@/src/store/sessionStore';
 import { InspectionCreateModal } from '@/src/components/Home/InspectionCreateModal';
+import { PasswordModal } from '@/src/components/ui/Modal/PasswordModal';
 
 import { styles } from './styles';
 
@@ -25,6 +26,9 @@ export default function HomeScreen() {
     const insets = useSafeAreaInsets();
     const [searchQuery, setSearchQuery] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
+    const [activeTab, setActiveTab] = useState<'abertas' | 'finalizadas'>('abertas');
+    const [passwordModalVisible, setPasswordModalVisible] = useState(false);
+    const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
     const {
         sessions,
@@ -42,6 +46,9 @@ export default function HomeScreen() {
         (s.osNumber && s.osNumber.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
+    const openSessions = filteredSessions.filter(s => s.status !== 'finalizada');
+    const closedSessions = filteredSessions.filter(s => s.status === 'finalizada');
+
     const handleCreateSession = () => {
         setModalVisible(true);
     };
@@ -53,23 +60,36 @@ export default function HomeScreen() {
         }
     };
 
+    const handleConfirmDelete = () => {
+        if (pendingDeleteId) {
+            deleteSession(pendingDeleteId);
+            setPendingDeleteId(null);
+        }
+    };
+
     const handleDeleteSession = (id: string) => {
-        Alert.alert(
-            "Confirmar Exclusão",
-            "Tem certeza que deseja deletar esta sessão? Esta ação não pode ser desfeita.",
-            [
-                {
-                    text: "Cancelar",
-                    style: "cancel"
-                },
-                {
-                    text: "Deletar",
-                    onPress: () => deleteSession(id),
-                    style: "destructive"
-                }
-            ],
-            { cancelable: true }
-        );
+        const session = sessions.find(s => s.id === id);
+        if (session?.status === 'finalizada') {
+            setPendingDeleteId(id);
+            setPasswordModalVisible(true);
+        } else {
+            Alert.alert(
+                "Confirmar Exclusão",
+                "Tem certeza que deseja deletar esta sessão? Esta ação não pode ser desfeita.",
+                [
+                    {
+                        text: "Cancelar",
+                        style: "cancel"
+                    },
+                    {
+                        text: "Deletar",
+                        onPress: () => deleteSession(id),
+                        style: "destructive"
+                    }
+                ],
+                { cancelable: true }
+            );
+        }
     };
 
     const handleSelectSession = (id: string) => {
@@ -85,7 +105,7 @@ export default function HomeScreen() {
 
             <View style={styles.logoContainer}>
                 <Image style={styles.logoImage} source={require('@/assets/images/check-mobile.png')} />
-                <Text style={styles.logoText}>CP-LHF</Text>
+                <Text style={styles.logoText}>FCP-LHF</Text>
             </View>
 
             <View style={styles.buttonWrapper}>
@@ -101,8 +121,27 @@ export default function HomeScreen() {
                 onChangeText={setSearchQuery}
             />
 
+            <View style={styles.tabContainer}>
+                <TouchableOpacity 
+                    style={[styles.tab, activeTab === 'abertas' && styles.activeTab]}
+                    onPress={() => setActiveTab('abertas')}
+                >
+                    <Text style={[styles.tabText, activeTab === 'abertas' && styles.activeTabText]}>
+                        Abertas 
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                    style={[styles.tab, activeTab === 'finalizadas' && styles.activeTab]}
+                    onPress={() => setActiveTab('finalizadas')}
+                >
+                    <Text style={[styles.tabText, activeTab === 'finalizadas' && styles.activeTabText]}>
+                        Finalizadas 
+                    </Text>
+                </TouchableOpacity>
+            </View>
+
             <SessionList
-                sessions={filteredSessions}
+                sessions={activeTab === 'abertas' ? openSessions : closedSessions}
                 onSelectSession={handleSelectSession}
                 onDeleteSession={handleDeleteSession}
             />
@@ -111,6 +150,17 @@ export default function HomeScreen() {
                 visible={modalVisible}
                 onClose={() => setModalVisible(false)}
                 onSubmit={handleConfirmCreate}
+            />
+
+            <PasswordModal
+                visible={passwordModalVisible}
+                onClose={() => {
+                    setPasswordModalVisible(false);
+                    setPendingDeleteId(null);
+                }}
+                onSuccess={handleConfirmDelete}
+                title="Excluir OP Finalizada"
+                description="Digite a senha para autorizar a exclusão desta OP finalizada."
             />
         </View>
     );

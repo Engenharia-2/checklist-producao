@@ -1,4 +1,5 @@
 import { Session } from "../../types/session";
+import { generateChartSVG } from "./svgChartGenerator";
 
 // --- Helper Functions for HTML Elements ---
 
@@ -39,6 +40,54 @@ const generateImageSection = (title: string, images: string[]) => {
     return imageHtml;
 };
 
+const generateCalibrationTable = (label: string, value: any) => {
+    if (!value || !value.points) return generateField(label, "Sem dados de calibração");
+
+    let tableRows = "";
+    value.points.forEach((pt: any, index: number) => {
+        const pointName = pt.name && pt.name.trim() !== "" ? pt.name : `Ponto ${index + 1}`;
+        tableRows += `
+            <tr>
+                <td>${pointName}</td>
+                <td>${pt.x}</td>
+                <td>${pt.y}</td>
+            </tr>
+        `;
+    });
+
+    const gainStr = value.gain !== null && value.gain !== undefined ? parseFloat(value.gain.toFixed(15)) : "N/A";
+    const offsetStr = value.offset !== null && value.offset !== undefined ? parseFloat(value.offset.toFixed(15)) : "N/A";
+    const r2Str = value.r2 !== null && value.r2 !== undefined ? parseFloat(value.r2.toFixed(15)) : "N/A";
+
+    const svgChart = value.points && value.points.length >= 2 
+        ? generateChartSVG(value.points, value.gain || 0, value.offset || 0) 
+        : '';
+
+    return `
+        <div class="field calibration-field">
+            <strong>${label}:</strong>
+            <table class="calibration-table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Ref. Padrão (X)</th>
+                        <th>Leitura (Y)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${tableRows}
+                </tbody>
+            </table>
+            <div class="calibration-results">
+                <strong>Ganho (a):</strong> ${gainStr} <br/>
+                <strong>Offset (b):</strong> ${offsetStr} <br/>
+                <strong>Qualidade (R²):</strong> ${r2Str}
+            </div>
+            ${svgChart}
+        </div>
+    `;
+};
+
 // --- ReportComponentFactory: Translates Schema + Answers to HTML ---
 
 const renderComponentHtml = (field: any, value: any): string => {
@@ -55,6 +104,9 @@ const renderComponentHtml = (field: any, value: any): string => {
 
         case 'image':
             return generateImageSection(field.label, value || []);
+
+        case 'calibration_table':
+            return generateCalibrationTable(field.label, value);
 
         default:
             return "";
@@ -196,6 +248,32 @@ export const createPdfContent = (
         .image-block { margin-bottom: 10px; }
         .report-image { max-width: 8.5cm; max-height: 10cm; height: auto; border-radius: 4px; border: 1px solid #ddd; }
         
+        .calibration-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .calibration-table th, .calibration-table td {
+            border: 1px solid #ccc;
+            padding: 5px;
+            text-align: center;
+        }
+        .calibration-table th {
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        .calibration-results {
+            margin-top: 5px;
+            padding: 10px;
+            background-color: #e6f7ff;
+            border: 1px solid #91d5ff;
+            border-radius: 4px;
+        }
+        .calibration-field {
+            flex-direction: column;
+            align-items: flex-start;
+        }
       </style>
     </head>
     <body>

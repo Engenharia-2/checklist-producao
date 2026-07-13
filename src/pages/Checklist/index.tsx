@@ -1,9 +1,10 @@
-import React from 'react';
-import { View, Text, ActivityIndicator, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native';
 import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
 import { CustomButton } from '@/src/components/ui/Button';
 import { ComponentFactory } from '@/src/components/Checklist/ComponentFactory';
 import { useDynamicForm } from '@/src/hooks/useDynamicForm';
+import { PasswordModal } from '@/src/components/ui/Modal/PasswordModal';
 import { styles } from './styles';
 
 type RootStackParamList = {
@@ -30,6 +31,16 @@ export default function DynamicFormScreen() {
         handleFieldChange 
     } = useDynamicForm(sessionId, formId, stepId);
 
+    const [passwordModalVisible, setPasswordModalVisible] = useState(false);
+    const isFinished = session?.status === 'finalizada';
+    const [isUnlocked, setIsUnlocked] = useState(false);
+
+    useEffect(() => {
+        if (session && session.status !== 'finalizada') {
+            setIsUnlocked(true);
+        }
+    }, [session?.status]);
+
     if (isLoading || !session) {
         return (
             <View style={styles.centerContainer}>
@@ -50,6 +61,14 @@ export default function DynamicFormScreen() {
 
     return (
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+            {isFinished && !isUnlocked && (
+                <View style={styles.lockedBanner}>
+                    <Text style={styles.lockedText}>OP Finalizada (Modo de Leitura).</Text>
+                    <TouchableOpacity onPress={() => setPasswordModalVisible(true)}>
+                        <Text style={styles.unlockLink}>Desbloquear Edição</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
 
             {activeFields.map((field: any) => (
                 <ComponentFactory
@@ -58,6 +77,7 @@ export default function DynamicFormScreen() {
                     value={answers[field.id]}
                     sessionId={sessionId}
                     onFieldChange={handleFieldChange}
+                    editable={isUnlocked}
                 />
             ))}
 
@@ -67,6 +87,14 @@ export default function DynamicFormScreen() {
                     onPress={() => navigation.goBack()}
                 />
             </View>
+
+            <PasswordModal
+                visible={passwordModalVisible}
+                onClose={() => setPasswordModalVisible(false)}
+                onSuccess={() => setIsUnlocked(true)}
+                title="Desbloquear Edição"
+                description="Digite a senha para permitir edições nesta OP finalizada."
+            />
         </ScrollView>
     );
 }

@@ -118,5 +118,65 @@ export const apiService = {
         } catch (error: any) {
             return null;
         }
+    },
+
+    uploadPdf: async (uri: string, opNumber: string, formName?: string, serialNumber?: string) => {
+        try {
+            const formData = new FormData();
+            const filename = uri.split('/').pop() || `OP-${opNumber}.pdf`;
+
+            // @ts-ignore
+            formData.append('pdf', {
+                uri,
+                name: filename,
+                type: 'application/pdf',
+            });
+            
+            if (formName) formData.append('formName', formName);
+            if (serialNumber) formData.append('serialNumber', serialNumber);
+
+            // Envia para uma rota específica de PDFs na API
+            const response = await fetch(`${BASE_URL}/upload-pdf`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    // O React Native define o Content-Type multipart/form-data automaticamente
+                },
+            });
+
+            if (!response.ok) {
+                let errorBody = '';
+                try {
+                    errorBody = await response.text();
+                } catch (e) {
+                    errorBody = '(Sem detalhes)';
+                }
+                throw new Error(`Falha no upload do PDF. Status: ${response.status}. Detalhes: ${errorBody}`);
+            }
+
+            const data = await response.json();
+            return data;
+        } catch (error: any) {
+            console.error('[apiService] Error uploading PDF:', error);
+            return null;
+        }
+    },
+
+    deleteImage: async (imageUrl: string) => {
+        try {
+            // Extrai o nome do arquivo da URL e limpa possíveis query parameters
+            const cleanUrl = imageUrl.split('?')[0].split('#')[0];
+            const filename = cleanUrl.split('/').pop();
+            if (!filename) return false;
+
+            const response = await fetch(`${BASE_URL}/upload/${filename}`, {
+                method: 'DELETE',
+            });
+
+            return response.ok;
+        } catch (error) {
+            console.error('[apiService] Error deleting image:', error);
+            return false;
+        }
     }
 };

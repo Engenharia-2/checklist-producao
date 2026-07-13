@@ -58,8 +58,8 @@ export const styles = StyleSheet.create({
     elevation: 5,
   },
   selectedImage: {
-    height: 150,
-    width: 150,
+    height: 125,
+    width: 125,
     borderRadius: 10,
     resizeMode: 'cover',
   },
@@ -67,8 +67,8 @@ export const styles = StyleSheet.create({
     position: 'relative',
     marginBottom: 15,
     marginRight: 15,
-    width: 150,
-    height: 150,
+    width: 125,
+    height: 125,
     elevation: 4,
     backgroundColor: colors.surface,
     borderRadius: 10,
@@ -106,7 +106,7 @@ export const styles = StyleSheet.create({
     elevation: 4,
   },
   flatListContent:{
-    paddingLeft: 20, 
+    paddingLeft: 0, 
     paddingVertical: 10,
   },
 })

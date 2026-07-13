@@ -58,3 +58,6 @@ export const CameraModal: React.FC<CameraModalProps> = ({ isVisible, onClose, on
         </Modal>
     );
 };
+
+export * from './QrScannerModal';
+
