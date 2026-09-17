@@ -1,5 +1,6 @@
-import React, { FC } from 'react';
-import { Alert, FlatList, Image, Text, TouchableOpacity, View, ActivityIndicator, useWindowDimensions } from 'react-native';
+import React, { FC, useState } from 'react';
+import { Alert, FlatList, Image, Text, TouchableOpacity, View, ActivityIndicator, useWindowDimensions, Modal } from 'react-native';
+import PagerView from 'react-native-pager-view';
 import { styles } from './style';
 import { colors } from '../../../../theme/colors';
 import { AttachedImage } from '../../../report/types';
@@ -16,6 +17,8 @@ type ImageAttachmentProps = {
 const ImageAttachment: FC<ImageAttachmentProps> = ({ attachedImages, onPickImage, onTakePicture, onDeleteImage, editable = true }) => {
   const { width } = useWindowDimensions();
   const numColumns = width > 600 ? 3 : 2;
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(0);
 
   const handleRemoveImage = (image: AttachedImage) => {
     Alert.alert(
@@ -28,7 +31,7 @@ const ImageAttachment: FC<ImageAttachmentProps> = ({ attachedImages, onPickImage
     );
   };
 
-  const renderImageItem = ({ item }: { item: AttachedImage }) => {
+  const renderImageItem = ({ item, index }: { item: AttachedImage, index: number }) => {
     const isDeleting = item.status === 'deleting';
     const isUploading = item.status === 'uploading';
     const isUploaded = item.status === 'uploaded';
@@ -36,7 +39,9 @@ const ImageAttachment: FC<ImageAttachmentProps> = ({ attachedImages, onPickImage
 
     return (
       <View key={item.id?.toString() || item.uri} style={[styles.imageItemContainer, isDeleting ? { opacity: 0.5 } : {}]}>
-        <Image source={{ uri: item.uri }} style={styles.selectedImage} />
+        <TouchableOpacity activeOpacity={0.8} onPress={() => { setSelectedIndex(index); setCurrentPage(index + 1); }} disabled={isDeleting || isUploading}>
+          <Image source={{ uri: item.uri }} style={styles.selectedImage} />
+        </TouchableOpacity>
         
         {isUploading && (
           <View style={styles.uploadingContainer}>
@@ -98,6 +103,32 @@ const ImageAttachment: FC<ImageAttachmentProps> = ({ attachedImages, onPickImage
           />
         </View>
       ) : null}
+
+      <Modal visible={selectedIndex !== null} transparent={true} onRequestClose={() => setSelectedIndex(null)} animationType="fade">
+        <View style={styles.modalBackground}>
+          <TouchableOpacity style={styles.closeModalButton} onPress={() => setSelectedIndex(null)}>
+            <Ionicons name="close-circle" size={40} color="#fff" />
+          </TouchableOpacity>
+          {selectedIndex !== null && (
+            <>
+              <Text style={styles.pageIndicator}>
+                {currentPage} / {attachedImages.length}
+              </Text>
+              <PagerView 
+                style={styles.pagerView} 
+                initialPage={selectedIndex}
+                onPageSelected={(e) => setCurrentPage(e.nativeEvent.position + 1)}
+              >
+                {attachedImages.map((img, i) => (
+                  <View key={i.toString()} style={styles.page}>
+                    <Image source={{ uri: img.uri }} style={styles.fullScreenImage} resizeMode="contain" />
+                  </View>
+                ))}
+              </PagerView>
+            </>
+          )}
+        </View>
+      </Modal>
     </>
   );
 };

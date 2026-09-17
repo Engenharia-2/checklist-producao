@@ -8,8 +8,8 @@ export const calculateIsSessionComplete = (session: Session, newAnswers: Record<
     const getStepStatus = (step: any) => {
         if (!step.fields || step.fields.length === 0) return 'complete';
 
-        // Filtra campos puramente visuais como títulos
-        const inputFields = step.fields.filter((field: any) => field.type !== 'title');
+        // Filtra campos puramente visuais como títulos e textos informativos
+        const inputFields = step.fields.filter((field: any) => field.type !== 'title' && field.type !== 'text');
         if (inputFields.length === 0) return 'complete';
 
         const filledFieldsCount = inputFields.filter((field: any) => {

@@ -2,10 +2,25 @@
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
+const fetchWithRetry = async (url: string, options: RequestInit = {}, retries = 3, delayMs = 500): Promise<Response> => {
+    try {
+        const response = await fetch(url, options);
+        return response;
+    } catch (error: any) {
+        if (retries > 0) {
+            console.log(`[apiService] Falha de rede detectada (${error.message}). Retentando em ${delayMs}ms... (Restam ${retries} tentativas)`);
+            await new Promise(resolve => setTimeout(resolve, delayMs));
+            return fetchWithRetry(url, options, retries - 1, delayMs * 2);
+        } else {
+            throw error;
+        }
+    }
+};
+
 export const apiService = {
     getFormDefinitions: async () => {
         try {
-            const response = await fetch(`${BASE_URL}/forms`);
+            const response = await fetchWithRetry(`${BASE_URL}/forms`);
             if (!response.ok) throw new Error('Falha ao buscar formulários');
             return await response.json();
         } catch (error) {
@@ -16,7 +31,7 @@ export const apiService = {
 
     getFormById: async (id: string) => {
         try {
-            const response = await fetch(`${BASE_URL}/forms/${id}`);
+            const response = await fetchWithRetry(`${BASE_URL}/forms/${id}`);
             // Se o formulário não existir (foi deletado), retornamos null silenciosamente
             if (response.status === 404) return null;
             
@@ -31,7 +46,7 @@ export const apiService = {
     // Session Endpoints (Substituindo o SQLite local)
     getSessions: async () => {
         try {
-            const response = await fetch(`${BASE_URL}/sessions`);
+            const response = await fetchWithRetry(`${BASE_URL}/sessions`);
             if (!response.ok) throw new Error('Falha ao buscar sessões');
             return await response.json();
         } catch (error) {
@@ -42,7 +57,7 @@ export const apiService = {
 
     createSession: async (initialData?: { osNumber?: string; serialNumber?: string; formName?: string; formId?: string }) => {
         try {
-            const response = await fetch(`${BASE_URL}/sessions`, {
+            const response = await fetchWithRetry(`${BASE_URL}/sessions`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: initialData ? JSON.stringify(initialData) : undefined,
@@ -57,7 +72,7 @@ export const apiService = {
 
     updateSession: async (id: string, updates: any) => {
         try {
-            const response = await fetch(`${BASE_URL}/sessions/${id}`, {
+            const response = await fetchWithRetry(`${BASE_URL}/sessions/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updates),
@@ -72,7 +87,7 @@ export const apiService = {
 
     deleteSession: async (id: string) => {
         try {
-            const response = await fetch(`${BASE_URL}/sessions/${id}`, { method: 'DELETE' });
+            const response = await fetchWithRetry(`${BASE_URL}/sessions/${id}`, { method: 'DELETE' });
             return response.ok;
         } catch (error) {
             console.error('[apiService] Error deleting session:', error);
@@ -82,6 +97,7 @@ export const apiService = {
 
     uploadImage: async (uri: string) => {
         try {
+            console.log(`[apiService] uploadImage chamado com uri: ${uri}`);
             const formData = new FormData();
             const filename = uri.split('/').pop() || 'image.jpg';
             const match = /\.(\w+)$/.exec(filename);
@@ -94,13 +110,10 @@ export const apiService = {
                 type,
             });
 
-            const response = await fetch(`${BASE_URL}/upload`, {
+            console.log(`[apiService] Disparando fetch para /upload...`);
+            const response = await fetchWithRetry(`${BASE_URL}/upload`, {
                 method: 'POST',
                 body: formData,
-                headers: {
-                    // Importante: NÃO definir 'Content-Type': 'multipart/form-data' manualmente.
-                    // O 'fetch' do React Native precisa definir isso automaticamente para incluir o 'boundary'.
-                },
             });
 
             if (!response.ok) {
@@ -110,18 +123,22 @@ export const apiService = {
                 } catch (e) {
                     errorBody = '(Não foi possível ler o corpo da resposta de erro)';
                 }
+                console.error(`[apiService] Erro no uploadImage. Status: ${response.status} Detalhes: ${errorBody}`);
                 throw new Error(`Falha no upload da imagem. Status: ${response.status}. Detalhes: ${errorBody}`);
             }
 
             const data = await response.json();
+            console.log(`[apiService] uploadImage sucesso! Retornou: ${data.url}`);
             return `${BASE_URL}${data.url}`;
         } catch (error: any) {
+            console.error(`[apiService] Exceção crítica no fetch de uploadImage:`, error);
             return null;
         }
     },
 
     uploadPdf: async (uri: string, opNumber: string, formName?: string, serialNumber?: string) => {
         try {
+            console.log(`[apiService] uploadPdf chamado para uri: ${uri}`);
             const formData = new FormData();
             const filename = uri.split('/').pop() || `OP-${opNumber}.pdf`;
 
@@ -135,13 +152,10 @@ export const apiService = {
             if (formName) formData.append('formName', formName);
             if (serialNumber) formData.append('serialNumber', serialNumber);
 
-            // Envia para uma rota específica de PDFs na API
-            const response = await fetch(`${BASE_URL}/upload-pdf`, {
+            console.log(`[apiService] Disparando fetch para /upload-pdf...`);
+            const response = await fetchWithRetry(`${BASE_URL}/upload-pdf`, {
                 method: 'POST',
                 body: formData,
-                headers: {
-                    // O React Native define o Content-Type multipart/form-data automaticamente
-                },
             });
 
             if (!response.ok) {
@@ -151,10 +165,12 @@ export const apiService = {
                 } catch (e) {
                     errorBody = '(Sem detalhes)';
                 }
+                console.error(`[apiService] Erro no uploadPdf. Status: ${response.status} Detalhes: ${errorBody}`);
                 throw new Error(`Falha no upload do PDF. Status: ${response.status}. Detalhes: ${errorBody}`);
             }
 
             const data = await response.json();
+            console.log(`[apiService] uploadPdf sucesso! Resposta:`, data);
             return data;
         } catch (error: any) {
             console.error('[apiService] Error uploading PDF:', error);
@@ -169,7 +185,7 @@ export const apiService = {
             const filename = cleanUrl.split('/').pop();
             if (!filename) return false;
 
-            const response = await fetch(`${BASE_URL}/upload/${filename}`, {
+            const response = await fetchWithRetry(`${BASE_URL}/upload/${filename}`, {
                 method: 'DELETE',
             });
 

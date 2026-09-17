@@ -109,4 +109,42 @@ export const styles = StyleSheet.create({
     paddingLeft: 0, 
     paddingVertical: 10,
   },
+  modalBackground: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fullScreenImage: {
+    width: '100%',
+    height: '100%',
+  },
+  closeModalButton: {
+    position: 'absolute',
+    top: 40,
+    right: 20,
+    zIndex: 10,
+    padding: 10,
+  },
+  pagerView: {
+    flex: 1,
+    width: '100%',
+  },
+  page: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pageIndicator: {
+    position: 'absolute',
+    top: 50,
+    alignSelf: 'center',
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    zIndex: 10,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    borderRadius: 15,
+  },
 })

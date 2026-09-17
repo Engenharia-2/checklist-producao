@@ -8,6 +8,7 @@ import { useImageManager } from '../../hooks/useImageManager';
 import { CameraModal } from '../../components/Camera';
 import { styles } from '../../pages/Checklist/styles';
 import { CalibrationTableField } from '../../components/ui/Table';
+import { SignatureField } from './SignatureField';
 
 const DynamicImageField = ({ 
     field, 
@@ -66,6 +67,13 @@ export const ComponentFactory: React.FC<ComponentFactoryProps> = ({
         case 'title':
             return (
                 <Text key={field.id} style={styles.titleText}>
+                    {field.label}
+                </Text>
+            );
+
+        case 'text':
+            return (
+                <Text key={field.id} style={styles.bodyText}>
                     {field.label}
                 </Text>
             );
@@ -134,6 +142,17 @@ export const ComponentFactory: React.FC<ComponentFactoryProps> = ({
                     field={field} 
                     value={value} 
                     onFieldChange={onFieldChange} 
+                    editable={editable}
+                />
+            );
+
+        case 'signature':
+            return (
+                <SignatureField
+                    key={field.id}
+                    field={field}
+                    value={value || null}
+                    onFieldChange={onFieldChange}
                     editable={editable}
                 />
             );

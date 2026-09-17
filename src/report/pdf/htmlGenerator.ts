@@ -22,6 +22,26 @@ const generateField = (label: string, value: any) => {
     `;
 };
 
+const generateSignatureHtml = (label: string, value: any) => {
+    if (!value) {
+        return `
+            <div class="signature-container">
+                <span class="signature-label">${label}:</span>
+                <span class="signature-missing">Pendente</span>
+            </div>
+        `;
+    }
+    return `
+        <div class="signature-container">
+            <span class="signature-label">${label}:</span>
+            <div class="signature-box">
+                <img src="${value}" class="signature-img" />
+                <div class="signature-line"></div>
+            </div>
+        </div>
+    `;
+};
+
 const generateImageSection = (title: string, images: string[]) => {
     if (!images || images.length === 0) return "";
     let imageHtml = `
@@ -95,6 +115,9 @@ const renderComponentHtml = (field: any, value: any): string => {
         case 'title':
             return `<h3 class="section-title">${field.label}</h3>`;
 
+        case 'text':
+            return `<p class="body-text">${field.label}</p>`;
+
         case 'input':
         case 'dropdown':
             return generateField(field.label, value);
@@ -107,6 +130,12 @@ const renderComponentHtml = (field: any, value: any): string => {
 
         case 'calibration_table':
             return generateCalibrationTable(field.label, value);
+
+        case 'signature':
+            return generateSignatureHtml(
+                !field.label || field.label === 'Novo signature' ? 'Assinatura' : field.label,
+                value
+            );
 
         default:
             return "";
@@ -222,6 +251,15 @@ export const createPdfContent = (
             page-break-after: avoid; 
         }
         
+        .body-text {
+            font-size: 11pt;
+            color: #555;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            line-height: 1.4;
+            page-break-inside: avoid;
+        }
+        
         .field { 
             display: flex; 
             justify-content: space-between; 
@@ -230,6 +268,47 @@ export const createPdfContent = (
             page-break-inside: avoid; 
         }
         .field strong { color: #005a9c; }
+
+        .signature-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+        .signature-label {
+            font-size: 11pt;
+            font-weight: bold;
+            color: #005a9c;
+            margin-bottom: 5px;
+        }
+        .signature-missing {
+            font-size: 11pt;
+            color: #ff4d4f;
+            font-style: italic;
+        }
+        .signature-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 420px;
+            max-width: 100%;
+            margin-top: 5px;
+        }
+        .signature-img {
+            width: 200px;
+            max-width: 100%;
+            height: 100px;
+            object-fit: contain;
+            object-position: center;
+            margin-bottom: 4px;
+        }
+        .signature-line {
+            width: 100%;
+            border-top: 1px solid #333;
+        }
         
         .checkbox-container { 
             display: flex; 

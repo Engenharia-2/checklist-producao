@@ -31,6 +31,13 @@ export const styles = StyleSheet.create({
         borderBottomColor: '#ddd',
         paddingBottom: 5,
     },
+    bodyText: {
+        fontSize: 16,
+        color: '#555',
+        marginTop: 10,
+        marginBottom: 10,
+        lineHeight: 22,
+    },
     fieldContainer: {
         marginBottom: 20,
     },
