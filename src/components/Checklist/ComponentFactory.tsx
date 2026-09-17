@@ -9,6 +9,7 @@ import { CameraModal } from '../../components/Camera';
 import { styles } from '../../pages/Checklist/styles';
 import { CalibrationTableField } from '../../components/ui/Table';
 import { SignatureField } from './SignatureField';
+import { QRVerificationField } from './QRVerificationField';
 
 const DynamicImageField = ({ 
     field, 
@@ -149,6 +150,17 @@ export const ComponentFactory: React.FC<ComponentFactoryProps> = ({
         case 'signature':
             return (
                 <SignatureField
+                    key={field.id}
+                    field={field}
+                    value={value || null}
+                    onFieldChange={onFieldChange}
+                    editable={editable}
+                />
+            );
+
+        case 'qr_verification':
+            return (
+                <QRVerificationField
                     key={field.id}
                     field={field}
                     value={value || null}

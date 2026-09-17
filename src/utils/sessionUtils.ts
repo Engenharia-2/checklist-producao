@@ -1,5 +1,12 @@
 import { Session } from '../types/session';
 
+export const isFieldAnswerComplete = (field: any, value: any): boolean => {
+    if (field.type === 'image') return Array.isArray(value) && value.length > 0;
+    if (field.type === 'checkbox') return value === true;
+    if (field.type === 'qr_verification') return value?.isValid === true;
+    return value !== undefined && value !== null && value !== '';
+};
+
 export const calculateIsSessionComplete = (session: Session, newAnswers: Record<string, any>): boolean => {
     // Usamos any para formDefinition por enquanto, pois o tipo Session puro pode não ter essa tipagem na estrutura atual
     const steps = (session as any)?.formDefinition?.schema?.steps || [];
@@ -14,9 +21,7 @@ export const calculateIsSessionComplete = (session: Session, newAnswers: Record<
 
         const filledFieldsCount = inputFields.filter((field: any) => {
             const val = newAnswers[field.id];
-            if (field.type === 'image') return Array.isArray(val) && val.length > 0;
-            if (field.type === 'checkbox') return val === true;
-            return val !== undefined && val !== null && val !== '';
+            return isFieldAnswerComplete(field, val);
         }).length;
 
         if (filledFieldsCount === 0) return 'pending';

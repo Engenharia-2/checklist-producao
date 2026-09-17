@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { CustomButton } from '@/src/components/ui/Button';
 import { useReportGenerator } from '@/src/hooks/useReportGenerator';
 import { InspectionCreateModal } from '@/src/components/Home/InspectionCreateModal';
+import { isFieldAnswerComplete } from '@/src/utils/sessionUtils';
 import { styles } from './styles';
 
 type RootStackParamList = {
@@ -42,9 +43,7 @@ export default function StepsMenuScreen() {
 
         const filledFieldsCount = inputFields.filter((field: any) => {
             const val = answers[field.id];
-            if (field.type === 'image') return Array.isArray(val) && val.length > 0;
-            if (field.type === 'checkbox') return val === true;
-            return val !== undefined && val !== null && val !== '';
+            return isFieldAnswerComplete(field, val);
         }).length;
 
         if (filledFieldsCount === 0) return 'pending';

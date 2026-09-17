@@ -42,6 +42,20 @@ const generateSignatureHtml = (label: string, value: any) => {
     `;
 };
 
+const generateQRVerificationCard = (label: string, value: any) => {
+    const isValid = value?.isValid === true;
+
+    return `
+        <div class="qr-verification-card ${isValid ? 'validated' : 'not-validated'}">
+            <span class="qr-verification-icon">${isValid ? '&#10003;' : '&#10007;'}</span>
+            <div class="qr-verification-content">
+                <strong>${label || 'Verificação de QR Codes'}</strong>
+                <span>${isValid ? 'QR Codes lidos e validados com sucesso.' : 'QR Codes não validados.'}</span>
+            </div>
+        </div>
+    `;
+};
+
 const generateImageSection = (title: string, images: string[]) => {
     if (!images || images.length === 0) return "";
     let imageHtml = `
@@ -136,6 +150,9 @@ const renderComponentHtml = (field: any, value: any): string => {
                 !field.label || field.label === 'Novo signature' ? 'Assinatura' : field.label,
                 value
             );
+
+        case 'qr_verification':
+            return generateQRVerificationCard(field.label, value);
 
         default:
             return "";
@@ -308,6 +325,50 @@ export const createPdfContent = (
         .signature-line {
             width: 100%;
             border-top: 1px solid #333;
+        }
+
+        .qr-verification-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            margin: 12px 0;
+            border: 1px solid;
+            border-radius: 8px;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+        .qr-verification-card.validated {
+            color: #237804;
+            background-color: #f6ffed;
+            border-color: #b7eb8f;
+        }
+        .qr-verification-card.not-validated {
+            color: #a8071a;
+            background-color: #fff1f0;
+            border-color: #ffa39e;
+        }
+        .qr-verification-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border: 2px solid currentColor;
+            border-radius: 50%;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .qr-verification-content {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .qr-verification-content strong {
+            font-size: 11pt;
+        }
+        .qr-verification-content span {
+            font-size: 10pt;
         }
         
         .checkbox-container { 
