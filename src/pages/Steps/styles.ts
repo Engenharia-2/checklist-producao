@@ -47,6 +47,13 @@ export const styles = StyleSheet.create({
         textAlign: 'center',
         paddingHorizontal: 30,
     },
+    lockedStepCard: {
+        backgroundColor: '#f0f0f0',
+        opacity: 0.75,
+    },
+    lockedStepTitle: {
+        color: '#8c8c8c',
+    },
     checkIcon: {
         position: 'absolute',
         left: 20,

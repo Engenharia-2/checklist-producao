@@ -7,8 +7,9 @@ import { ThemeProvider } from 'styled-components/native';
 import DynamicFormScreen from './pages/Checklist';
 import StepsMenuScreen from './pages/Steps';
 import HomeScreen from './pages/Home';
+import { RootStackParamList } from './types/navigation';
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<RootStackParamList>();
 
 export default function App() {
     return (

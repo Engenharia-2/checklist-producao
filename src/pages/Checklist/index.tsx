@@ -5,14 +5,9 @@ import { CustomButton } from '@/src/components/ui/Button';
 import { ComponentFactory } from '@/src/components/Checklist/ComponentFactory';
 import { useDynamicForm } from '@/src/hooks/useDynamicForm';
 import { PasswordModal } from '@/src/components/ui/Modal/PasswordModal';
+import { getStepStatus } from '@/src/utils/sessionUtils';
+import { RootStackParamList } from '@/src/types/navigation';
 import { styles } from './styles';
-
-type RootStackParamList = {
-    Home: undefined;
-    Entry: { id: string };
-    StepsMenu: { id: string; formId: string };
-    DynamicForm: { id: string; formId: string; stepId?: string };
-};
 
 type DynamicFormRouteProp = RouteProp<RootStackParamList, 'DynamicForm'>;
 
@@ -22,6 +17,7 @@ export default function DynamicFormScreen() {
     const { id: sessionId, formId, stepId } = route.params;
 
     const { 
+        schema,
         activeFields,
         isLoading, 
         answers, 
@@ -31,12 +27,20 @@ export default function DynamicFormScreen() {
 
     const [passwordModalVisible, setPasswordModalVisible] = useState(false);
     const sessionStatus = session?.status;
+    const steps = schema?.steps || [];
+    const currentStepIndex = steps.findIndex((step: any) => step.id === stepId);
+    const isLastStep = steps.length > 0 && currentStepIndex === steps.length - 1;
+    const previousStepsComplete = steps.length > 1
+        && steps.slice(0, -1).every((step: any) => getStepStatus(step, answers) === 'complete');
+    const isLastStepBlocked = steps.length > 1 && isLastStep && !previousStepsComplete;
     const isFinished = sessionStatus === 'finalizada';
+    const isProtectedStockStep = sessionStatus === 'estoque' && !isLastStep;
+    const isProtected = isFinished || isProtectedStockStep;
     const [isUnlocked, setIsUnlocked] = useState(false);
 
     useEffect(() => {
-        setIsUnlocked(sessionStatus !== undefined && sessionStatus !== 'finalizada');
-    }, [sessionId, sessionStatus]);
+        setIsUnlocked(sessionStatus !== undefined && !isProtected);
+    }, [sessionId, stepId, sessionStatus, isProtected]);
 
     if (isLoading || !session) {
         return (
@@ -56,11 +60,26 @@ export default function DynamicFormScreen() {
         );
     }
 
+    if (isLastStepBlocked) {
+        return (
+            <View style={styles.centerContainer}>
+                <Text style={styles.errorText}>
+                    Conclua todas as etapas anteriores antes de iniciar a etapa final de expedição.
+                </Text>
+                <CustomButton title="Voltar" onPress={() => navigation.goBack()} />
+            </View>
+        );
+    }
+
     return (
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-            {isFinished && !isUnlocked && (
+            {isProtected && !isUnlocked && (
                 <View style={styles.lockedBanner}>
-                    <Text style={styles.lockedText}>OP Finalizada (Modo de Leitura).</Text>
+                    <Text style={styles.lockedText}>
+                        {isFinished
+                            ? 'OP Finalizada (Modo de Leitura).'
+                            : 'Etapa de produção protegida (OP em Estoque).'}
+                    </Text>
                     <TouchableOpacity onPress={() => setPasswordModalVisible(true)}>
                         <Text style={styles.unlockLink}>Desbloquear Edição</Text>
                     </TouchableOpacity>
@@ -90,7 +109,9 @@ export default function DynamicFormScreen() {
                 onClose={() => setPasswordModalVisible(false)}
                 onSuccess={() => setIsUnlocked(true)}
                 title="Desbloquear Edição"
-                description="Digite a senha para permitir edições nesta OP finalizada."
+                description={isFinished
+                    ? 'Digite a senha para permitir edições nesta OP finalizada.'
+                    : 'Digite a senha para editar uma etapa de produção desta OP em estoque.'}
             />
         </ScrollView>
     );

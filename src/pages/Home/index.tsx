@@ -2,22 +2,23 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
-import { Alert, View, Image, Text, TouchableOpacity } from 'react-native';
+import { View, Image, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { HomeTabs } from '@/src/components/Home/HomeTabs';
+import { InspectionCreateModal } from '@/src/components/Home/InspectionCreateModal';
 import { SessionList } from '@/src/components/Home/SessionList';
 import { CustomButton } from '@/src/components/ui/Button';
 import { SearchInput } from '@/src/components/ui/Input/SearchInput';
-import { useSessionStore } from '@/src/store/sessionStore';
-import { InspectionCreateModal } from '@/src/components/Home/InspectionCreateModal';
 import { PasswordModal } from '@/src/components/ui/Modal/PasswordModal';
+import { useHomeSessions } from '@/src/hooks/useHomeSessions';
+import { useProtectedSessionDelete } from '@/src/hooks/useProtectedSessionDelete';
+import { useSessionStore } from '@/src/store/sessionStore';
+import { HomeTab } from '@/src/types/home';
+import { RootStackParamList } from '@/src/types/navigation';
+import { CreateSessionData } from '@/src/types/session';
 
 import { styles } from './styles';
-
-type RootStackParamList = {
-    Home: undefined;
-    StepsMenu: { id: string; formId: string };
-};
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -26,9 +27,7 @@ export default function HomeScreen() {
     const insets = useSafeAreaInsets();
     const [searchQuery, setSearchQuery] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
-    const [activeTab, setActiveTab] = useState<'abertas' | 'finalizadas'>('abertas');
-    const [passwordModalVisible, setPasswordModalVisible] = useState(false);
-    const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+    const [activeTab, setActiveTab] = useState<HomeTab>('abertas');
 
     const {
         sessions,
@@ -37,58 +36,22 @@ export default function HomeScreen() {
         initializeStore
     } = useSessionStore();
 
+    const displayedSessions = useHomeSessions(sessions, searchQuery, activeTab);
+    const {
+        passwordModalVisible,
+        requestDelete,
+        confirmDelete,
+        cancelDelete,
+    } = useProtectedSessionDelete({ sessions, deleteSession });
+
     useEffect(() => {
         initializeStore();
     }, [initializeStore]);
 
-    const filteredSessions = sessions.filter((s) =>
-        !searchQuery ||
-        (s.osNumber && s.osNumber.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
-
-    const openSessions = filteredSessions.filter(s => s.status !== 'finalizada');
-    const closedSessions = filteredSessions.filter(s => s.status === 'finalizada');
-
-    const handleCreateSession = () => {
-        setModalVisible(true);
-    };
-
-    const handleConfirmCreate = async (data: { osNumber: string; serialNumber: string; formName: string; formId: string }) => {
+    const handleConfirmCreate = async (data: CreateSessionData) => {
         const newId = await createSession(data);
         if (newId) {
             navigation.navigate('StepsMenu', { id: newId, formId: data.formId });
-        }
-    };
-
-    const handleConfirmDelete = () => {
-        if (pendingDeleteId) {
-            deleteSession(pendingDeleteId);
-            setPendingDeleteId(null);
-        }
-    };
-
-    const handleDeleteSession = (id: string) => {
-        const session = sessions.find(s => s.id === id);
-        if (session?.status === 'finalizada') {
-            setPendingDeleteId(id);
-            setPasswordModalVisible(true);
-        } else {
-            Alert.alert(
-                "Confirmar Exclusão",
-                "Tem certeza que deseja deletar esta sessão? Esta ação não pode ser desfeita.",
-                [
-                    {
-                        text: "Cancelar",
-                        style: "cancel"
-                    },
-                    {
-                        text: "Deletar",
-                        onPress: () => deleteSession(id),
-                        style: "destructive"
-                    }
-                ],
-                { cancelable: true }
-            );
         }
     };
 
@@ -111,7 +74,7 @@ export default function HomeScreen() {
             <View style={styles.buttonWrapper}>
                 <CustomButton
                     title="Iniciar Nova OP"
-                    onPress={handleCreateSession}
+                    onPress={() => setModalVisible(true)}
                 />
             </View>
 
@@ -121,29 +84,12 @@ export default function HomeScreen() {
                 onChangeText={setSearchQuery}
             />
 
-            <View style={styles.tabContainer}>
-                <TouchableOpacity 
-                    style={[styles.tab, activeTab === 'abertas' && styles.activeTab]}
-                    onPress={() => setActiveTab('abertas')}
-                >
-                    <Text style={[styles.tabText, activeTab === 'abertas' && styles.activeTabText]}>
-                        Abertas 
-                    </Text>
-                </TouchableOpacity>
-                <TouchableOpacity 
-                    style={[styles.tab, activeTab === 'finalizadas' && styles.activeTab]}
-                    onPress={() => setActiveTab('finalizadas')}
-                >
-                    <Text style={[styles.tabText, activeTab === 'finalizadas' && styles.activeTabText]}>
-                        Finalizadas 
-                    </Text>
-                </TouchableOpacity>
-            </View>
+            <HomeTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
             <SessionList
-                sessions={activeTab === 'abertas' ? openSessions : closedSessions}
+                sessions={displayedSessions}
                 onSelectSession={handleSelectSession}
-                onDeleteSession={handleDeleteSession}
+                onDeleteSession={requestDelete}
             />
 
             <InspectionCreateModal
@@ -154,13 +100,10 @@ export default function HomeScreen() {
 
             <PasswordModal
                 visible={passwordModalVisible}
-                onClose={() => {
-                    setPasswordModalVisible(false);
-                    setPendingDeleteId(null);
-                }}
-                onSuccess={handleConfirmDelete}
-                title="Excluir OP Finalizada"
-                description="Digite a senha para autorizar a exclusão desta OP finalizada."
+                onClose={cancelDelete}
+                onSuccess={confirmDelete}
+                title="Excluir OP Protegida"
+                description="Digite a senha para autorizar a exclusão desta OP em estoque ou finalizada."
             />
         </View>
     );

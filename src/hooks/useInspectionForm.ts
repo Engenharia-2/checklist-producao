@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Alert } from 'react-native';
 import { apiService } from '@/src/services/apiService';
+import { CreateSessionData } from '@/src/types/session';
 
 interface UseInspectionFormProps {
     visible: boolean;
-    initialData?: { osNumber: string; serialNumber: string; formName: string; formId: string };
-    onSubmit: (data: { osNumber: string; serialNumber: string; formName: string; formId: string }) => Promise<void>;
+    initialData?: CreateSessionData;
+    onSubmit: (data: CreateSessionData) => Promise<void>;
     onClose: () => void;
 }
 

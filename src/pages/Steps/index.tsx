@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { Alert, View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useSessionStore } from '@/src/store/sessionStore';
@@ -7,14 +7,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { CustomButton } from '@/src/components/ui/Button';
 import { useReportGenerator } from '@/src/hooks/useReportGenerator';
 import { InspectionCreateModal } from '@/src/components/Home/InspectionCreateModal';
-import { isFieldAnswerComplete } from '@/src/utils/sessionUtils';
+import { getStepStatus, StepStatus } from '@/src/utils/sessionUtils';
+import { RootStackParamList } from '@/src/types/navigation';
+import { CreateSessionData } from '@/src/types/session';
 import { styles } from './styles';
-
-type RootStackParamList = {
-    Home: undefined;
-    StepsMenu: { id: string; formId: string };
-    DynamicForm: { id: string; formId: string; stepId: string };
-};
 
 type StepsMenuRouteProp = RouteProp<RootStackParamList, 'StepsMenu'>;
 type StepsMenuNavigationProp = StackNavigationProp<RootStackParamList, 'StepsMenu'>;
@@ -34,24 +30,7 @@ export default function StepsMenuScreen() {
     
     const { isGenerating: isGeneratingReport, generateReport } = useReportGenerator();
 
-    const getStepStatus = (step: any) => {
-        if (!step.fields || step.fields.length === 0) return 'complete';
-
-        // Filtra campos puramente visuais como títulos e textos informativos
-        const inputFields = step.fields.filter((field: any) => field.type !== 'title' && field.type !== 'text');
-        if (inputFields.length === 0) return 'complete';
-
-        const filledFieldsCount = inputFields.filter((field: any) => {
-            const val = answers[field.id];
-            return isFieldAnswerComplete(field, val);
-        }).length;
-
-        if (filledFieldsCount === 0) return 'pending';
-        if (filledFieldsCount === inputFields.length) return 'complete';
-        return 'in_progress';
-    };
-
-    const handleUpdateSession = async (data: { osNumber: string; serialNumber: string; formName: string; formId: string }) => {
+    const handleUpdateSession = async (data: CreateSessionData) => {
         if (session) {
             await updateSession(session.id, data);
         }
@@ -65,15 +44,34 @@ export default function StepsMenuScreen() {
     } : undefined;
 
     const totalSteps = steps.length;
-    const completedSteps = steps.filter((step: any) => getStepStatus(step) === 'complete').length;
+    const stepStatuses: StepStatus[] = steps.map((step: any) => getStepStatus(step, answers));
+    const completedSteps = stepStatuses.filter(status => status === 'complete').length;
     const progressPercent = totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
+    const previousStepsComplete = totalSteps > 1
+        && stepStatuses.slice(0, -1).every(status => status === 'complete');
 
-    const getStatusColor = (status: 'pending' | 'in_progress' | 'complete') => {
+    const getStatusColor = (status: StepStatus) => {
         switch (status) {
             case 'complete': return '#21ce49';
             case 'in_progress': return '#ffa500';
             case 'pending': default: return '#ccc';
         }
+    };
+
+    const handleSelectStep = (stepId: string, isLastStepLocked: boolean) => {
+        if (isLastStepLocked) {
+            Alert.alert(
+                'Etapa bloqueada',
+                'Conclua todas as etapas anteriores antes de iniciar a etapa final de expedição.'
+            );
+            return;
+        }
+
+        navigation.navigate('DynamicForm', {
+            id: sessionId,
+            formId: (session as any).formId,
+            stepId,
+        });
     };
 
     return (
@@ -96,20 +94,19 @@ export default function StepsMenuScreen() {
                 )}
 
                 <View style={styles.stepsList}>
-                    {steps.map((step: any) => {
-                        const status = getStepStatus(step);
+                    {steps.map((step: any, index: number) => {
+                        const status = stepStatuses[index];
+                        const isLastStep = index === totalSteps - 1;
+                        const isLastStepLocked = totalSteps > 1 && isLastStep && !previousStepsComplete;
                         return (
                             <TouchableOpacity 
                                 key={step.id} 
                                 style={[
                                     styles.stepCard, 
+                                    isLastStepLocked && styles.lockedStepCard,
                                     { borderLeftWidth: 6, borderLeftColor: getStatusColor(status) }
                                 ]}
-                                onPress={() => navigation.navigate('DynamicForm', { 
-                                    id: sessionId, 
-                                    formId: (session as any).formId,
-                                    stepId: step.id 
-                                })}
+                                onPress={() => handleSelectStep(step.id, isLastStepLocked)}
                             >
                                 {status === 'complete' && (
                                     <Ionicons name="checkmark-circle" size={24} color="#21ce49" style={styles.statusIcon} />
@@ -121,9 +118,16 @@ export default function StepsMenuScreen() {
                                     <Ionicons name="radio-button-off" size={24} color="#ccc" style={styles.statusIcon} />
                                 )}
                                 
-                                <Text style={styles.stepTitle}>{step.title}</Text>
+                                <Text style={[styles.stepTitle, isLastStepLocked && styles.lockedStepTitle]}>
+                                    {step.title}
+                                </Text>
                                 
-                                <Ionicons name="chevron-forward" size={20} color="#ccc" style={styles.chevronIcon} />
+                                <Ionicons
+                                    name={isLastStepLocked ? 'lock-closed' : 'chevron-forward'}
+                                    size={20}
+                                    color={isLastStepLocked ? '#8c8c8c' : '#ccc'}
+                                    style={styles.chevronIcon}
+                                />
                             </TouchableOpacity>
                         );
                     })}
@@ -134,7 +138,7 @@ export default function StepsMenuScreen() {
                         title={isGeneratingReport ? "Gerando Relatório..." : "Gerar Relatório"} 
                         onPress={() => generateReport(session)}
                         isLoading={isGeneratingReport}
-                        disabled={isGeneratingReport || totalSteps === 0 || completedSteps < totalSteps}
+                        disabled={isGeneratingReport || session?.status !== 'finalizada'}
                     />
                     <View style={{ height: 12 }} />
                     <CustomButton 

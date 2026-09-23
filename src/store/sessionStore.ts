@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { apiService } from '../services/apiService';
-import { Session, SessionStatus } from '../types/session';
-import { calculateIsSessionComplete } from '../utils/sessionUtils';
+import { CreateSessionData, Session } from '../types/session';
+import { calculateSessionStatus } from '../utils/sessionUtils';
 
 interface SessionState {
     sessions: Session[];
@@ -9,7 +9,7 @@ interface SessionState {
     isLoading: boolean;
 
     initializeStore: () => Promise<void>;
-    createSession: (data: { osNumber: string; serialNumber: string; formName: string; formId: string }) => Promise<string>;
+    createSession: (data: CreateSessionData) => Promise<string>;
     deleteSession: (id: string) => Promise<void>;
     getFilteredSessions: (query: string) => Session[];
     updateSession: (id: string, updates: Partial<Session>) => Promise<void>;
@@ -41,7 +41,25 @@ export const useSessionStore = create<SessionState>((set, get) => ({
                 return mappedSession;
             }));
 
-            set({ sessions: sessionsWithDefinitions });
+            // Classifica OPs antigas ainda não finalizadas conforme a nova etapa de estoque.
+            const normalizedSessions = await Promise.all(sessionsWithDefinitions.map(async (session: any) => {
+                if (session.status === 'finalizada') {
+                    return session;
+                }
+
+                const calculatedStatus = calculateSessionStatus(
+                    session as Session,
+                    session.answers || {}
+                );
+
+                if (calculatedStatus !== session.status) {
+                    await apiService.updateSession(session.id, { status: calculatedStatus });
+                }
+
+                return { ...session, status: calculatedStatus };
+            }));
+
+            set({ sessions: normalizedSessions });
         } catch (error) {
             console.error('Failed to init store:', error);
         } finally {
@@ -49,7 +67,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
         }
     },
 
-    createSession: async (data: { osNumber: string; serialNumber: string; formName: string; formId: string }) => {
+    createSession: async (data: CreateSessionData) => {
         set({ isCreating: true });
 
         try {
@@ -129,9 +147,8 @@ export const useSessionStore = create<SessionState>((set, get) => ({
         const currentAnswers = (session as any).answers || {};
         const newAnswers = { ...currentAnswers, ...items };
 
-        // Calcula dinamicamente o status da OP
-        const isComplete = calculateIsSessionComplete(session as Session, newAnswers);
-        const newStatus: SessionStatus = isComplete ? 'finalizada' : 'aberta';
+        // Calcula dinamicamente se a OP está aberta, em estoque ou finalizada.
+        const newStatus = calculateSessionStatus(session as Session, newAnswers);
 
         // Optimistic update
         const updatedSessions = sessions.map(s =>

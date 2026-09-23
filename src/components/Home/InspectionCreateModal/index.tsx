@@ -4,14 +4,15 @@ import { CustomButton } from '@/src/components/ui/Button';
 import { CustomDropdown } from '@/src/components/ui/Dropdown';
 import { useInspectionForm } from '@/src/hooks/useInspectionForm';
 import { QrScannerModal } from '@/src/components/Camera';
+import { CreateSessionData } from '@/src/types/session';
 import { QrCode } from 'lucide-react-native';
 import { styles } from './styles';
 
 interface InspectionCreateModalProps {
     visible: boolean;
     onClose: () => void;
-    onSubmit: (data: { osNumber: string; serialNumber: string; formName: string; formId: string }) => Promise<void>;
-    initialData?: { osNumber: string; serialNumber: string; formName: string; formId: string };
+    onSubmit: (data: CreateSessionData) => Promise<void>;
+    initialData?: CreateSessionData;
     title?: string;
     submitText?: string;
 }

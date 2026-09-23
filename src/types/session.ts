@@ -1,4 +1,11 @@
-export type SessionStatus = 'aberta' | 'finalizada';
+export type SessionStatus = 'aberta' | 'estoque' | 'finalizada';
+
+export interface CreateSessionData {
+    osNumber: string;
+    serialNumber: string;
+    formName: string;
+    formId: string;
+}
 
 export interface Session {
     id: string;
