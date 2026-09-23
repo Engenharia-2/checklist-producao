@@ -22,9 +22,7 @@ export default function DynamicFormScreen() {
     const { id: sessionId, formId, stepId } = route.params;
 
     const { 
-        schema, 
         activeFields,
-        stepTitle,
         isLoading, 
         answers, 
         session, 
@@ -32,14 +30,13 @@ export default function DynamicFormScreen() {
     } = useDynamicForm(sessionId, formId, stepId);
 
     const [passwordModalVisible, setPasswordModalVisible] = useState(false);
-    const isFinished = session?.status === 'finalizada';
+    const sessionStatus = session?.status;
+    const isFinished = sessionStatus === 'finalizada';
     const [isUnlocked, setIsUnlocked] = useState(false);
 
     useEffect(() => {
-        if (session && session.status !== 'finalizada') {
-            setIsUnlocked(true);
-        }
-    }, [session?.status]);
+        setIsUnlocked(sessionStatus !== undefined && sessionStatus !== 'finalizada');
+    }, [sessionId, sessionStatus]);
 
     if (isLoading || !session) {
         return (

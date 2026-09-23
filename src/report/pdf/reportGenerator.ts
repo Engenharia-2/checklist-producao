@@ -18,17 +18,17 @@ export const generatePdf = async (session: Session) => {
         // 1. Prepara uma cópia profunda para não sujar o estado da aplicação
         const processedSession = JSON.parse(JSON.stringify(session));
         
-        // 2. Processa imagens dinamicamente baseando-se no schema do formulário
+        // 2. Processa imagens e assinaturas dinamicamente com base no schema do formulário
         const schema = (processedSession as any).formDefinition?.schema;
         const answers = (processedSession as any).answers || {};
 
         if (schema) {
-            console.log('[reportGenerator] Iniciando processamento dinâmico de imagens...');
+            console.log('[reportGenerator] Iniciando processamento dinâmico de imagens e assinaturas...');
             const processedAnswers = await ReportImageProcessor.processAnswersImages(schema, answers);
             // Substitui as respostas originais (com URIs) pelas processadas (com Base64)
             (processedSession as any).answers = processedAnswers;
         } else {
-            console.warn('[reportGenerator] Schema não encontrado. O relatório pode não conter imagens.');
+            console.warn('[reportGenerator] Schema não encontrado. O relatório pode não conter imagens e assinaturas.');
         }
 
         // 3. Converte o logo da empresa
@@ -54,8 +54,18 @@ export const generatePdf = async (session: Session) => {
         // 5.3. Faz o upload para o servidor (silencioso - backup)
         try {
             console.log(`[reportGenerator] Enviando backup para o servidor: ${targetUri}`);
-            await apiService.uploadPdf(targetUri, opNumber, session.formName, session.serialNumber);
-            console.log('[reportGenerator] Backup no servidor concluído com sucesso.');
+            const backupResult = await apiService.uploadPdf(
+                targetUri,
+                opNumber,
+                session.formName,
+                session.serialNumber
+            );
+
+            if (backupResult.status === 'completed') {
+                console.log('[reportGenerator] Backup no servidor concluído com sucesso.');
+            } else {
+                console.warn('[reportGenerator] Backup pendente. A API realizará novas tentativas em segundo plano.');
+            }
         } catch (uploadError) {
             console.error('[reportGenerator] Falha no upload para o servidor (apenas log):', uploadError);
             // Não bloqueamos o app pois o envio pelo WhatsApp (compartilhar) continua sendo o principal

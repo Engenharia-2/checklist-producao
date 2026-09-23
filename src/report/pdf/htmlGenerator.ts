@@ -1,4 +1,5 @@
 import { Session } from "../../types/session";
+import { normalizeSignatureLabel } from "../../utils/signature";
 import { generateChartSVG } from "./svgChartGenerator";
 
 // --- Helper Functions for HTML Elements ---
@@ -147,7 +148,7 @@ const renderComponentHtml = (field: any, value: any): string => {
 
         case 'signature':
             return generateSignatureHtml(
-                !field.label || field.label === 'Novo signature' ? 'Assinatura' : field.label,
+                normalizeSignatureLabel(field.label),
                 value
             );
 

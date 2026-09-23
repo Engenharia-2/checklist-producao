@@ -1,4 +1,4 @@
-import styled from 'styled-components/native';
+import { styled } from 'styled-components/native';
 
 // --- CustomInput Styles ---
 export const CustomContainer = styled.View`

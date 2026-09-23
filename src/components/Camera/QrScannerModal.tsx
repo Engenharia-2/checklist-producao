@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Modal, Text, TouchableOpacity, View } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { styles } from './style';
@@ -6,7 +6,7 @@ import { styles } from './style';
 interface QrScannerModalProps {
     isVisible: boolean;
     onClose: () => void;
-    onScan: (data: string) => boolean | void;
+    onScan: (data: string) => boolean | void | Promise<boolean | void>;
     closeOnScan?: boolean;
     completedScans?: number;
     totalScans?: number;
@@ -25,31 +25,36 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
     const [permission, requestPermission] = useCameraPermissions();
     const [isScanPaused, setIsScanPaused] = useState(false);
     const [lastScanAccepted, setLastScanAccepted] = useState(true);
+    const isScanLocked = useRef(false);
+    const resumeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
+        if (resumeTimer.current) {
+            clearTimeout(resumeTimer.current);
+            resumeTimer.current = null;
+        }
+
         if (isVisible) {
+            isScanLocked.current = false;
             setIsScanPaused(false);
             setLastScanAccepted(true);
         }
+
+        return () => {
+            if (resumeTimer.current) {
+                clearTimeout(resumeTimer.current);
+                resumeTimer.current = null;
+            }
+        };
     }, [isVisible]);
 
-    useEffect(() => {
-        const shouldResumeMultiScan = !closeOnScan && completedScans < totalScans;
-        const shouldRetrySingleScan = closeOnScan && !lastScanAccepted;
+    const handleBarcodeScanned = async (data: string) => {
+        if (!data || isScanLocked.current) return;
 
-        if (!isScanPaused || (!shouldResumeMultiScan && !shouldRetrySingleScan)) return;
+        isScanLocked.current = true;
+        setIsScanPaused(true);
 
-        const resumeTimer = setTimeout(() => {
-            setIsScanPaused(false);
-        }, 1000);
-
-        return () => clearTimeout(resumeTimer);
-    }, [closeOnScan, completedScans, isScanPaused, lastScanAccepted, totalScans]);
-
-    const handleBarcodeScanned = (data: string) => {
-        if (!data || isScanPaused) return;
-
-        const accepted = onScan(data) !== false;
+        const accepted = (await onScan(data)) !== false;
         setLastScanAccepted(accepted);
 
         if (closeOnScan && accepted) {
@@ -57,7 +62,14 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
             return;
         }
 
-        setIsScanPaused(true);
+        const scanWillBeComplete = !closeOnScan && accepted && completedScans + 1 >= totalScans;
+        if (scanWillBeComplete) return;
+
+        resumeTimer.current = setTimeout(() => {
+            isScanLocked.current = false;
+            setIsScanPaused(false);
+            resumeTimer.current = null;
+        }, 1000);
     };
 
     // Se estiver invisível, nem renderiza

@@ -8,8 +8,8 @@ import { useImageManager } from '../../hooks/useImageManager';
 import { CameraModal } from '../../components/Camera';
 import { styles } from '../../pages/Checklist/styles';
 import { CalibrationTableField } from '../../components/ui/Table';
-import { SignatureField } from './SignatureField';
-import { QRVerificationField } from './QRVerificationField';
+import { SignatureField } from '../SignatureField';
+import { QRVerificationField } from '../QRVerificationField';
 
 const DynamicImageField = ({ 
     field, 

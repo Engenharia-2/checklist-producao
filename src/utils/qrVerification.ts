@@ -15,8 +15,11 @@ export interface QRVerificationValue {
     isValid: boolean;
     opMatches: boolean;
     nfeMatches: boolean;
+    orderMatches: boolean;
     errors: string[];
 }
+
+export const QR_SCAN_ORDER: QRCodeKind[] = ['nfe_op_pv', 'serial_op', 'nfe_op_pv'];
 
 const normalizeQRCode = (value: string) => value.trim().replace(/\s+/g, ' ').toUpperCase();
 
@@ -58,6 +61,8 @@ export const buildQRVerificationValue = (scans: ParsedQRCode[]): QRVerificationV
 
     const opMatches = limitedScans.length === 3 && new Set(opValues).size === 1;
     const nfeMatches = nfeValues.length >= 2 && new Set(nfeValues).size === 1;
+    const orderMatches = limitedScans.length === 3
+        && limitedScans.every((scan, index) => scan.type === QR_SCAN_ORDER[index]);
 
     if (limitedScans.length < 3) {
         errors.push(`Leia os ${3 - limitedScans.length} QR Code(s) restante(s).`);
@@ -73,14 +78,18 @@ export const buildQRVerificationValue = (scans: ParsedQRCode[]): QRVerificationV
         if (serialScans.length === 0) {
             errors.push('O QR Code com número de série não foi identificado.');
         }
+        if (!orderMatches) {
+            errors.push('Os QR Codes não foram lidos na ordem esperada.');
+        }
     }
 
     return {
         version: 1,
         scans: limitedScans,
-        isValid: limitedScans.length === 3 && opMatches && nfeMatches && serialScans.length > 0,
+        isValid: limitedScans.length === 3 && opMatches && nfeMatches && orderMatches,
         opMatches,
         nfeMatches,
+        orderMatches,
         errors,
     };
 };

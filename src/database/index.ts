@@ -30,13 +30,13 @@ export const initDatabase = async () => {
   try {
     await db.execAsync('ALTER TABLE sessions ADD COLUMN formId TEXT;');
     console.log('Migration: formId column added');
-  } catch (e) {
+  } catch {
     // Column likely already exists
   }
 
   try {
     await db.execAsync('ALTER TABLE sessions ADD COLUMN checklist TEXT;');
-  } catch (e) {
+  } catch {
     // Column likely already exists
   }
 };

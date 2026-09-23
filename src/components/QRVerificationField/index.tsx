@@ -1,14 +1,15 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Alert, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { QrScannerModal } from '../../Camera';
-import { CustomButton } from '../../ui/Button';
+import { QrScannerModal } from '../Camera';
+import { CustomButton } from '../ui/Button';
 import {
     buildQRVerificationValue,
     parseQRCode,
     ParsedQRCode,
+    QR_SCAN_ORDER,
     QRVerificationValue,
-} from '../../../utils/qrVerification';
+} from '../../utils/qrVerification';
 import { styles } from './styles';
 
 interface QRVerificationFieldProps {
@@ -17,6 +18,24 @@ interface QRVerificationFieldProps {
     onFieldChange: (fieldId: string, value: QRVerificationValue) => void;
     editable?: boolean;
 }
+
+const showScanAlert = (title: string, message: string): Promise<false> => (
+    new Promise(resolve => {
+        let wasResolved = false;
+        const resolveAfterDismiss = () => {
+            if (wasResolved) return;
+            wasResolved = true;
+            resolve(false);
+        };
+
+        Alert.alert(
+            title,
+            message,
+            [{ text: 'OK', onPress: resolveAfterDismiss }],
+            { cancelable: true, onDismiss: resolveAfterDismiss }
+        );
+    })
+);
 
 export const QRVerificationField: React.FC<QRVerificationFieldProps> = ({
     field,
@@ -42,33 +61,42 @@ export const QRVerificationField: React.FC<QRVerificationFieldProps> = ({
         if (!editable) return;
 
         if (workingScans.length >= 3) {
-            const emptyValue = buildQRVerificationValue([]);
             setWorkingScans([]);
-            onFieldChange(field.id, emptyValue);
         }
 
         setScannerVisible(true);
     };
 
-    const handleScan = (rawValue: string) => {
+    const handleScan = async (rawValue: string): Promise<boolean> => {
         const parsed = parseQRCode(rawValue);
 
         if (!parsed) {
-            Alert.alert(
+            return showScanAlert(
                 'QR Code não reconhecido',
                 'O conteúdo lido não corresponde aos formatos esperados para NF-e/OP/PV ou número de série/OP.'
             );
-            return false;
         }
 
         if (workingScans.length >= 3) return false;
 
+        const expectedType = QR_SCAN_ORDER[workingScans.length];
+        if (parsed.type !== expectedType) {
+            const expectedLabel = expectedType === 'serial_op'
+                ? 'a etiqueta com número de série e OP'
+                : 'uma etiqueta com NF-e, OP e Pedido de Venda';
+
+            return showScanAlert(
+                'Etiqueta fora da ordem',
+                `Nesta etapa, leia ${expectedLabel}.`
+            );
+        }
+
         const nextScans = [...workingScans, parsed];
         const nextValue = buildQRVerificationValue(nextScans);
         setWorkingScans(nextScans);
-        onFieldChange(field.id, nextValue);
 
         if (nextScans.length === 3) {
+            onFieldChange(field.id, nextValue);
             setScannerVisible(false);
         }
 
@@ -80,6 +108,12 @@ export const QRVerificationField: React.FC<QRVerificationFieldProps> = ({
         : workingScans.length < 3
             ? 'Continuar leitura'
             : 'Ler novamente';
+
+    const scanInstructions = [
+        'Leia a primeira etiqueta com NF-e, OP e Pedido de Venda.',
+        'Leia a etiqueta com número de série e OP.',
+        'Leia a segunda etiqueta com NF-e, OP e Pedido de Venda.',
+    ];
 
     return (
         <View style={styles.container}>
@@ -113,7 +147,7 @@ export const QRVerificationField: React.FC<QRVerificationFieldProps> = ({
                 closeOnScan={false}
                 completedScans={workingScans.length}
                 totalScans={3}
-                instructionText="Leia as três etiquetas de expedição, uma de cada vez."
+                instructionText={scanInstructions[workingScans.length] || scanInstructions[2]}
             />
         </View>
     );

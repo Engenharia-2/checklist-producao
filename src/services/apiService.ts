@@ -2,6 +2,12 @@
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
+interface PdfBackupResponse {
+    status: 'completed' | 'pending';
+    message: string;
+    path: string;
+}
+
 const fetchWithRetry = async (url: string, options: RequestInit = {}, retries = 3, delayMs = 500): Promise<Response> => {
     try {
         const response = await fetch(url, options);
@@ -120,7 +126,7 @@ export const apiService = {
                 let errorBody = '';
                 try {
                     errorBody = await response.text();
-                } catch (e) {
+                } catch {
                     errorBody = '(Não foi possível ler o corpo da resposta de erro)';
                 }
                 console.error(`[apiService] Erro no uploadImage. Status: ${response.status} Detalhes: ${errorBody}`);
@@ -136,7 +142,12 @@ export const apiService = {
         }
     },
 
-    uploadPdf: async (uri: string, opNumber: string, formName?: string, serialNumber?: string) => {
+    uploadPdf: async (
+        uri: string,
+        opNumber: string,
+        formName?: string,
+        serialNumber?: string
+    ): Promise<PdfBackupResponse> => {
         try {
             console.log(`[apiService] uploadPdf chamado para uri: ${uri}`);
             const formData = new FormData();
@@ -162,19 +173,19 @@ export const apiService = {
                 let errorBody = '';
                 try {
                     errorBody = await response.text();
-                } catch (e) {
+                } catch {
                     errorBody = '(Sem detalhes)';
                 }
                 console.error(`[apiService] Erro no uploadPdf. Status: ${response.status} Detalhes: ${errorBody}`);
                 throw new Error(`Falha no upload do PDF. Status: ${response.status}. Detalhes: ${errorBody}`);
             }
 
-            const data = await response.json();
+            const data = await response.json() as PdfBackupResponse;
             console.log(`[apiService] uploadPdf sucesso! Resposta:`, data);
             return data;
-        } catch (error: any) {
+        } catch (error) {
             console.error('[apiService] Error uploading PDF:', error);
-            return null;
+            throw error;
         }
     },
 

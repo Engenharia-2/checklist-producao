@@ -37,6 +37,38 @@ export const convertImageToBase64 = async (uri: string): Promise<string | null> 
 };
 
 /**
+ * Converts a signature URI to Base64 while preserving PNG transparency.
+ * @param uri The signature image URI.
+ * @returns The Base64 PNG string, or null on error.
+ */
+export const convertSignatureToBase64 = async (uri: string): Promise<string | null> => {
+    if (!uri) {
+        return null;
+    }
+
+    try {
+        const manipulatedSignature = await manipulateAsync(
+            uri,
+            [{ resize: { width: MAX_IMAGE_DIMENSION } }],
+            {
+                compress: 1,
+                format: SaveFormat.PNG,
+                base64: true,
+            }
+        );
+
+        if (!manipulatedSignature.base64) {
+            return null;
+        }
+
+        return `data:image/png;base64,${manipulatedSignature.base64}`;
+    } catch (error) {
+        console.error('ImageUtils: Error converting signature to Base64:', error);
+        return null;
+    }
+};
+
+/**
  * Converts the app logo to a Base64 string.
  * @returns The Base64 string of the logo, or null on error.
  */

@@ -3,7 +3,8 @@ import { View, Text, TouchableOpacity, Image, Modal, ActivityIndicator, Alert, u
 import SignatureScreen from 'react-native-signature-canvas';
 import { File, Directory, Paths } from 'expo-file-system';
 import { Ionicons } from '@expo/vector-icons';
-import { apiService } from '../../../services/apiService';
+import { apiService } from '../../services/apiService';
+import { normalizeSignatureLabel } from '../../utils/signature';
 import { styles } from './styles';
 
 interface SignatureFieldProps {
@@ -23,24 +24,22 @@ export const SignatureField: React.FC<SignatureFieldProps> = ({
     const [isUploading, setIsUploading] = useState(false);
     const signRef = useRef<any>(null);
     const { height: screenHeight } = useWindowDimensions();
-    const label = !field.label || field.label === 'Nova Assinatura' ? 'Assinatura' : field.label;
+    const label = normalizeSignatureLabel(field.label);
 
     const handleOK = async (signature: string) => {
         console.log('[SignatureField] handleOK acionado. Preparando base64...');
         const base64Data = signature.replace('data:image/png;base64,', '');
         const filename = `signature_${Date.now()}.png`;
+        let tempFile: File | null = null;
 
         setIsUploading(true);
         try {
             console.log('[SignatureField] Resolvendo cacheDir e arquivo...');
             const cacheDir = new Directory(Paths.cache);
-            const tempFile = new File(cacheDir, filename);
+            tempFile = new File(cacheDir, filename);
             
             console.log(`[SignatureField] Gravando arquivo temporário: ${tempFile.uri}`);
-            await tempFile.write(base64Data, { encoding: 'base64' });
-
-            console.log(`[SignatureField] Arquivo gravado. Aguardando 300ms para sync do File System...`);
-            await new Promise(resolve => setTimeout(resolve, 300));
+            tempFile.write(base64Data, { encoding: 'base64' });
 
             console.log('[SignatureField] Iniciando upload via apiService...');
             const remoteUrl = await apiService.uploadImage(tempFile.uri);
@@ -54,6 +53,14 @@ export const SignatureField: React.FC<SignatureFieldProps> = ({
             console.error(e);
             Alert.alert("Erro", "Falha ao processar assinatura.");
         } finally {
+            try {
+                if (tempFile?.exists) {
+                    tempFile.delete();
+                }
+            } catch (cleanupError) {
+                console.warn('[SignatureField] Não foi possível excluir o arquivo temporário:', cleanupError);
+            }
+
             setIsUploading(false);
             setModalVisible(false);
         }

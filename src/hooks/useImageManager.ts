@@ -38,6 +38,7 @@ export const useImageManager = (sessionId: string, imageKey: string) => {
                     return remoteUrl;
                 }, 3, 1000);
             } catch (error) {
+                console.error('[useImageManager] Falha no upload da imagem após as tentativas:', error);
                 // Marca com erro na fila se falhar todas as vezes
                 setUploadingQueue(prev =>
                     prev.map(item => item.id === uploadItem.id ? { ...item, status: 'error' } : item)
